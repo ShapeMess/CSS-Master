@@ -1,0 +1,19 @@
+
+:root {
+    --cssm-bg1: #1a1b1b;
+    --cssm-bg2: #262829;
+    --cssm-bg3: #313435;
+
+    --cssm-c1: #1BDA94;
+    --cssm-c2: #0AEB98;
+
+    --cssm-fc1: #FFF5F9;
+    --cssm-fc2: #D9D2D5;
+
+    --cssm-b-radius: 5px;
+
+}
+
+
+@import './partials/select-widget';
+@import './partials/ctx-menu';

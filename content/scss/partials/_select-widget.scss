@@ -1,0 +1,20 @@
+
+._cssm_s-widget {
+    position: fixed;
+    z-index: 20000;
+
+    min-width: 200px;
+    min-height: 100px;
+
+    background-color: var(--cssm-bg1);
+    border-radius: var(--cssm-b-radius);
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.274);
+
+    ._cssm_sw-handle {
+        height: 26px;
+        width: 100%;
+        border-bottom: solid 1px var(--cssm-bg2);
+        border-top-left-radius: var(--cssm-b-radius);
+        border-top-right-radius: var(--cssm-b-radius);
+    }
+}
