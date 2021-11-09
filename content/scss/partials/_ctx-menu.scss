@@ -14,6 +14,10 @@
     display: none;
     &._cssm_shown { display: block; }
 
+    &, & * {
+        user-select: none;
+    }
+
     ._cssm_elem-inf {
         width: calc(100% - 20px);
         padding: 8px 10px;
@@ -26,7 +30,6 @@
             font-size: 14px;
             font-family: monospace;
             display: inline;
-            text-overflow: ellipsis;
             word-wrap: break-word;
 
             &._cssm_tag     { color: rgb(221, 82, 72); }
@@ -48,6 +51,11 @@
         border-bottom: solid 1px var(--cssm-bg2);
         cursor: pointer;
 
+        &._cssm_disabled {
+            pointer-events: none;
+            opacity: 0.35;
+        }
+
         &:hover {
             background-color: var(--cssm-bg2);
         }
@@ -61,6 +69,7 @@
     z-index: 10000;
     background-color: rgb(182, 182, 182);
     mix-blend-mode: difference;
+    display: none;
     
     &._cssm_v {
         top: 0;
@@ -73,15 +82,22 @@
         height: 1px;
     }
 }
+body:hover ._cssm_gline {
+    display: block;
+}
 
 ._cssm_gbox {
     position: fixed;
     z-index: 10000;
     pointer-events: none;
+    display: none;
 
     &._cssm_margin { background-color: rgba(253, 207, 0, 0.08); }
     &._cssm_padding { background-color: rgba(255, 0, 76, 0.08); }
 
     &._cssm_margin-border { outline: solid 1px rgba(253, 207, 0, 0.6); z-index: 10001; }
     &._cssm_padding-border { outline: solid 1px rgba(255, 0, 76, 0.6); z-index: 10002; }
+}
+body:hover ._cssm_gbox {
+    display: block;
 }

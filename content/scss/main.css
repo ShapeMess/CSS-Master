@@ -9,6 +9,14 @@
   --cssm-b-radius: 5px;
 }
 
+._cssm_content-wrap {
+  position: fixed;
+  bottom: -100vh;
+  left: -100vw;
+  width: 0;
+  height: 0;
+}
+
 ._cssm_s-widget {
   position: fixed;
   z-index: 20000;
@@ -40,6 +48,12 @@
 ._cssm_ctx-menu._cssm_shown {
   display: block;
 }
+._cssm_ctx-menu, ._cssm_ctx-menu * {
+  -webkit-user-select: none;
+     -moz-user-select: none;
+      -ms-user-select: none;
+          user-select: none;
+}
 ._cssm_ctx-menu ._cssm_elem-inf {
   width: calc(100% - 20px);
   padding: 8px 10px;
@@ -52,7 +66,6 @@
   font-size: 14px;
   font-family: monospace;
   display: inline;
-  text-overflow: ellipsis;
   word-wrap: break-word;
 }
 ._cssm_ctx-menu ._cssm_elem-inf p._cssm_inf-sign._cssm_tag {
@@ -77,6 +90,10 @@
   border-bottom: solid 1px var(--cssm-bg2);
   cursor: pointer;
 }
+._cssm_ctx-menu ._cssm_option._cssm_disabled {
+  pointer-events: none;
+  opacity: 0.35;
+}
 ._cssm_ctx-menu ._cssm_option:hover {
   background-color: var(--cssm-bg2);
 }
@@ -89,6 +106,7 @@
   z-index: 10000;
   background-color: #b6b6b6;
   mix-blend-mode: difference;
+  display: none;
 }
 ._cssm_gline._cssm_v {
   top: 0;
@@ -101,10 +119,15 @@
   height: 1px;
 }
 
+body:hover ._cssm_gline {
+  display: block;
+}
+
 ._cssm_gbox {
   position: fixed;
   z-index: 10000;
   pointer-events: none;
+  display: none;
 }
 ._cssm_gbox._cssm_margin {
   background-color: rgba(253, 207, 0, 0.08);
@@ -119,4 +142,8 @@
 ._cssm_gbox._cssm_padding-border {
   outline: solid 1px rgba(255, 0, 76, 0.6);
   z-index: 10002;
+}
+
+body:hover ._cssm_gbox {
+  display: block;
 }/*# sourceMappingURL=main.css.map */

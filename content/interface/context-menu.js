@@ -9,6 +9,10 @@ const setTarget = (el) => {
     btns.elemInfo.class.textContent = el.classList.length > 0 ? `.${el.classList.toString().split(' ').join('.')}` : '';
     const entireStrig = `${el.tagName}${el.id.length > 0 ? `#${el.id}` : ''}${el.classList.length > 0 ? `.${el.classList.toString().split(' ').join('.')}` : ''}`;
     btns.elemInfo.wrap.setAttribute('title', entireStrig);
+    if (el.tagName === 'BODY' || el.tagName === 'HTML')
+        doc.t(btns.delete).addClass('disabled');
+    else
+        doc.t(btns.delete).removeClass('disabled');
 };
 let btns = {
     elemInfo: {
@@ -17,6 +21,7 @@ let btns = {
         id: null,
         class: null,
     },
+    select: null,
     delete: null,
     rmInlineCss: null,
 };
@@ -50,6 +55,18 @@ const contextMenu = doc.createHTML({
                 { tag: 'p', attr: { className: 'inf-sign id' }, use: el => btns.elemInfo.id = el },
                 { tag: 'p', attr: { className: 'inf-sign class' }, use: el => btns.elemInfo.class = el }
             ]
+        },
+        {
+            tag: 'div',
+            attr: { class: 'option opt-select' },
+            nodes: ['Select for styling'],
+            use: el => btns.select = el,
+            evt: {
+                click: () => {
+                    // evts.remove(target);
+                    hide();
+                }
+            }
         },
         {
             tag: 'div',

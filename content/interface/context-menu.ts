@@ -12,7 +12,11 @@ const setTarget = (el: HTMLElement) => {
     btns.elemInfo.class.textContent = el.classList.length > 0 ? `.${el.classList.toString().split(' ').join('.')}` : '';
 
     const entireStrig = `${el.tagName}${el.id.length > 0 ? `#${el.id}` : ''}${el.classList.length > 0 ? `.${el.classList.toString().split(' ').join('.')}` : ''}`;
-    btns.elemInfo.wrap.setAttribute('title', entireStrig)
+    btns.elemInfo.wrap.setAttribute('title', entireStrig);
+
+    if (el.tagName === 'BODY' || el.tagName === 'HTML') doc.t(btns.delete).addClass('disabled');
+    else                                                doc.t(btns.delete).removeClass('disabled');
+    
 };
 
 let btns = {
@@ -22,6 +26,7 @@ let btns = {
         id: null as HTMLParagraphElement,
         class: null as HTMLParagraphElement,
     },
+    select:      null as HTMLDivElement,
     delete:      null as HTMLDivElement,
     rmInlineCss: null as HTMLDivElement,
 }
@@ -57,6 +62,18 @@ const contextMenu = doc.createHTML({
                 { tag: 'p', attr: { className: 'inf-sign id'    }, use: el => btns.elemInfo.id =    el as HTMLParagraphElement },
                 { tag: 'p', attr: { className: 'inf-sign class' }, use: el => btns.elemInfo.class = el as HTMLParagraphElement }
             ]
+        },
+        {
+            tag: 'div',
+            attr: { class: 'option opt-select' },
+            nodes: ['Select for styling'],
+            use: el => btns.select = el as HTMLDivElement,
+            evt: { 
+                click: () => {
+                    // evts.remove(target);
+                    hide();
+                } 
+            }
         },
         {
             tag: 'div',
