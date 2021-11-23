@@ -1,103 +1,103 @@
 
-._cssm_ctx-menu {
-    position: fixed;
-    z-index: 21000;
+$p: '_cssm_';
+$z: 20000;
 
-    min-width: 200px;
-    max-width: 200px;
+$c-bg1: var(--cssm-bg1);
+$c-bg2: var(--cssm-bg2);
+$c-bg3: var(--cssm-bg3);
 
-    background-color: var(--cssm-bg1);
-    border-radius: var(--cssm-b-radius);
-    box-shadow: 0 0 20px rgba(0, 0, 0, 0.274);
-    overflow-x: hidden;
+$fc1: var(--cssm-fc1);
 
+.#{$p}ctx {
     display: none;
-    &._cssm_shown { display: block; }
+    position: fixed;
+    z-index: $z;
 
-    &, & * {
-        user-select: none;
-    }
+    min-height: 100px;
+    width: 200px;
 
-    ._cssm_elem-inf {
-        width: calc(100% - 20px);
-        padding: 8px 10px;
-        background-color: var(--cssm-bg3);
+    background-color: $c-bg1;
+    border-radius: 5px;
+    box-shadow: 0 0 7px rgba(0, 0, 0, 0.5);
+
+    pointer-events: all;
+
+    &, * { user-select: none; }
+
+    .#{$p}handle {
+        width: calc(200px - 18px);
+        height: 25px;
+        display: flex;
+        align-items: center;
+        padding: 0 9px;
+        padding-bottom: 10px;
+        padding-top: 7px;
+        position: relative;
         overflow-x: hidden;
+        cursor: move;
 
-        p._cssm_inf-sign {
-            margin: 0;
-            padding: 0;
-            font-size: 14px;
+        span {
             font-family: monospace;
-            display: inline;
-            word-wrap: break-word;
-
-            &._cssm_tag     { color: rgb(221, 82, 72); }
-            &._cssm_id      { color: rgb(0, 153, 255); }
-            &._cssm_class   { color: rgb(221, 152, 72); }
-        }
-    }
-
-    ._cssm_option {
-        width: calc(100% - 20px);
-        padding: 8px 10px;
-        margin: 0;
-        color: var(--cssm-fc1);
-        font-family: Arial, Helvetica, sans-serif;
-        font-size: 13px;
-        letter-spacing: 0.02em;
-        font-weight: 400;
-        text-shadow: 0 0 1px #000;
-        border-bottom: solid 1px var(--cssm-bg2);
-        cursor: pointer;
-
-        &._cssm_disabled {
+            font-size: 13.5px;
             pointer-events: none;
-            opacity: 0.35;
+
+            margin-right: 4px;
+
+            &.#{$p}tag {
+                color: rgb(241, 197, 210);
+            }
+            &.#{$p}id {
+                color: var(--cssm-c1);
+            }
+            &.#{$p}cls {
+                color: var(--cssm-c2);
+            }
         }
 
-        &:hover {
-            background-color: var(--cssm-bg2);
+        div.#{$p}shadow {
+            position: absolute;
+            top: 0; left: 0;
+            height: 100%; width: 100%;
+            background: linear-gradient(90deg, rgba(0,0,0,0) 80%, $c-bg1 96%);
+            pointer-events: none;
+            border-top-left-radius: 5px;
+            border-top-right-radius: 5px;
         }
 
-        &:last-child { border-bottom: none; }
     }
-}
 
-._cssm_gline {
-    position: fixed;
-    z-index: 10000;
-    background-color: rgb(182, 182, 182);
-    mix-blend-mode: difference;
-    display: none;
-    
-    &._cssm_v {
-        top: 0;
-        height: 100vh;
-        width: 1px;
+    .#{$p}content {
+
+        .#{$p}option {
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 13px;
+            color: $fc1;
+            padding: 7px 10px;
+            margin: 0;
+            border-bottom: solid 1px $c-bg2;
+            cursor: pointer;
+            transition: background-color 0.1s;
+            position: relative;
+
+            &.#{$p}disabled { 
+                pointer-events: none;
+                opacity: 0.4;
+            }
+
+            &:hover { background-color: $c-bg2; }
+            &:last-child { border-bottom: 0; }
+
+            &.#{$p}dbl:after {
+                content: '';
+                position: absolute;
+                top: 0; right: 0;
+                border-style: solid;
+                border-width: 0 7px 7px 0;
+                border-color: transparent rgba(255, 255, 255, 0.2) transparent transparent
+            }
+
+        }
+
     }
-    &._cssm_h {
-        left: 0;
-        width: 100vw;
-        height: 1px;
-    }
-}
-body:hover ._cssm_gline {
-    display: block;
-}
 
-._cssm_gbox {
-    position: fixed;
-    z-index: 10000;
-    pointer-events: none;
-    display: none;
-
-    &._cssm_margin { background-color: rgba(253, 207, 0, 0.08); }
-    &._cssm_padding { background-color: rgba(255, 0, 76, 0.08); }
-
-    &._cssm_margin-border { outline: solid 1px rgba(253, 207, 0, 0.6); z-index: 10001; }
-    &._cssm_padding-border { outline: solid 1px rgba(255, 0, 76, 0.6); z-index: 10002; }
-}
-body:hover ._cssm_gbox {
-    display: block;
 }

@@ -1,0 +1,152 @@
+
+$p: '_cssm_';
+$z: 10000;
+$zb: 10001;
+$zp: 10003;
+$zm: 10002;
+$zib: 20000;
+
+$c-bg1: var(--cssm-bg1);
+
+$gline-color: #ffffff;
+$body-color: #0080d6;
+$body-color-bg: rgba(0, 128, 214, 0.11);
+$margin-color: #b200d6;
+
+$toggle-btn-clr1: var(--cssm-c1);
+$toggle-btn-clr2: rgba(255, 255, 255, 0.15);
+
+
+
+.#{$p}base {
+    display: block;
+    position: fixed;
+    z-index: $z;
+    pointer-events: none;
+}
+
+.#{$p}gbox-entire-box {
+    @extend .#{$p}base;
+
+    .#{$p}corner {
+        height: 5px; 
+        width: 5px;
+        max-height: 100%;
+        max-width: 100%;
+        position: absolute;
+        z-index: $zp;
+
+        $bOffset: 0px;
+        $bWidth: 1px;
+        
+        &.#{$p}tl {
+            top: $bOffset; border-top: solid $bWidth $gline-color;
+            left: $bOffset; border-left: solid $bWidth $gline-color;
+        }
+        &.#{$p}tr {
+            top: $bOffset; border-top: solid $bWidth $gline-color;
+            right: $bOffset; border-right: solid $bWidth $gline-color;
+        }
+        &.#{$p}bl {
+            bottom: $bOffset; border-bottom: solid $bWidth $gline-color;
+            right: $bOffset; border-right: solid $bWidth $gline-color;
+        }
+        &.#{$p}br {
+            bottom: $bOffset; border-bottom: solid $bWidth $gline-color;
+            left: $bOffset; border-left: solid $bWidth $gline-color;
+        }
+    }
+}
+.#{$p}gbox-margin {
+    @extend .#{$p}base;
+    border: dashed 1px $margin-color;
+    z-index: $zm;
+}
+.#{$p}gbox-body {
+    @extend .#{$p}base;
+    border: solid 1px $body-color;
+    background: $body-color-bg;
+    z-index: $zb;
+}
+.#{$p}gline {
+    @extend .#{$p}base;
+    background-color: $gline-color;
+    opacity: 0.2;
+    z-index: $zp;
+
+    &.#{$p}v {
+        height: 100vh;
+        width: 1px;
+        top: 0;
+    }
+    &.#{$p}h {
+        width: 100vw;
+        height: 1px;
+        left: 0;
+    }
+}
+
+.#{$p}elem-info {
+    position: fixed;
+    left: 0;
+    bottom: 0;
+    height: 25px;
+    background-color: $c-bg1;
+    padding: 0 10px;
+    pointer-events: none;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    transition: transform 0.3s;
+
+    z-index: $zib;
+
+
+    .#{$p}info-toggle {
+        height: 13px;
+        width: 13px;
+        border-radius: 50%;
+        background-color: $toggle-btn-clr1;
+        box-shadow: 0 0 3px rgb(0, 0, 0);
+        pointer-events: all;
+        margin-right: 7px;
+        cursor: pointer;
+
+        transition: background-color 0.3s, transform 0.3s;
+    }
+
+    span {
+        font-family: monospace;
+        font-size: 13px;
+        transform: translateY(-1px);
+
+        &.#{$p}tag {
+            color: rgb(241, 197, 210);
+        }
+        &.#{$p}id {
+            color: var(--cssm-c1);
+        }
+        &.#{$p}class {
+            color: var(--cssm-c2);
+        }
+    }
+
+    &.#{$p}toggle {
+        transform: translateY(25px);
+        .#{$p}info-toggle {
+            transform: translateY(-25px);
+            background-color: $toggle-btn-clr2;
+        }
+    }
+}
+
+
+.#{$p}y-scrollbar-check {
+    height: 0;
+    width: 100%;
+    display: block;
+    pointer-events: none;
+    background: transparent;
+}

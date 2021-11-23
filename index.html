@@ -9,21 +9,30 @@
     <script defer src="./content/index.js" type="module"></script>
     <link rel="stylesheet" href="./content/scss/main.css">
 </head>
-<body style="background-color: #121212;">
+<body style="background-color: #222;">
 
     <style>
-        p { color: #fff; }
+        p { color: rgb(165, 165, 165); }
         body { padding: 0; margin: 0; }
+
+        @keyframes anim1 {
+            0% { margin-right: 0px; transform: rotate(0deg); }
+            50% { margin-right: 150px; transform: rotate(20deg); }
+            100% { margin-right: 0px; transform: rotate(0deg); }
+        }
     </style>
 
 
 
-    <div style="height: 20vh"></div>
+    <div style="height: 20vh;"></div>
 
-    <p style="padding-left: 1px; padding-right: 2px; padding-top: 3px; padding-bottom: 4px;">Lorem ipsum dolor sit amet.</p>
-    <p id="p1">Lorem, ipsum.</p>
+    <p style="padding-left: 20px; padding-right: 40px; padding-top: 20px; padding-bottom: 40px; max-width: 300px; animation: anim1 2s infinite;">Lorem ipsum dolor sit amet.</p>
+    <p id="p1" style="position: fixed;">Lorem, ipsum.</p>
     <p id="p2" class="paragraph and some long class">Lorem ipsum dolor sit amet consectetur adipisicing elit. Enim maxime cumque hic voluptas. Voluptatum pariatur tempore vero mollitia vel assumenda.</p>
     
+
+    <div style="padding-left: 100px; height: 60px; width: 100px; background: #ffffff44; margin-top: 15px; transform: translateX(20px)"></div>
+
     <div style="height: 100vh"></div>
 
 

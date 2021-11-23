@@ -1,0 +1,161 @@
+
+$p: '_cssm_';
+$z: 15000;
+
+$c-bg1: var(--cssm-bg1);
+$c-bg2: var(--cssm-bg2);
+$c-bg3: var(--cssm-bg3);
+$c-bg4: var(--cssm-bg4);
+
+$c1: var(--cssm-c1);
+$c2: var(--cssm-c2);
+
+$fc1: var(--cssm-fc1);
+$fc2: var(--cssm-fc2);
+
+.#{$p}svg-ctrl {
+    cursor: pointer;
+    path {
+        fill: $c1;
+        transition: fill 0.15s;
+    }
+    &:hover path {
+        fill: $fc1;
+    }
+}
+
+.#{$p}group-manage {
+    position: fixed;
+    
+    position: fixed;
+    z-index: $z;
+
+    min-height: 100px;
+    max-height: 400px;
+    width: 300px;
+
+    top: 5vh;
+    left: 5vh;
+
+    background-color: $c-bg1;
+    border-radius: 5px;
+
+    box-shadow: 0 0 7px rgba(0, 0, 0, 0.5);
+
+    pointer-events: all;
+
+    transition: opacity 0.3s;
+
+    &.#{$p}opacity { opacity: 0.25; }
+
+    .#{$p}handle {
+        height: 30px;
+        width: 100%;
+        background-color: $c-bg2;
+        border-top-left-radius: 5px;
+        border-top-right-radius: 5px;
+        display: flex;
+        align-items: center;
+        cursor: move;
+
+        p {
+            color: $fc1;
+        }
+
+        .#{$p}btn-ball {
+            height: 14px;
+            width: 14px;
+            background-color: $fc1;
+            border-radius: 50%;
+            margin-left: 8px;
+            cursor: pointer;
+    
+            &.#{$p}hide { background-color: $c1; }
+        }
+    }
+
+    .#{$p}ctrl-main {
+        height: 30px;
+        width: 100%;
+        border-bottom: solid 1px $c-bg2;
+        display: flex;
+        align-items: center;
+
+        svg {
+            @extend .#{$p}svg-ctrl;
+            height: 16px;
+            width: 16px;
+            padding: 7px;
+        }
+    }
+
+    .#{$p}list {
+        width: 100%;
+        height: 200px;
+
+        overflow-y: auto;
+
+        &::-webkit-scrollbar {
+            width: 10px;
+            background: $c-bg2;
+        }
+        &::-webkit-scrollbar-thumb {
+            min-height: 40px;
+            background: $c-bg4;
+        }
+
+        .#{$p}group {
+            min-height: 30px;
+            width: 100%;
+
+            .#{$p}group-tab {
+                height: 30px;
+                padding: 0 8px;
+                border-bottom: solid 1px $c-bg2;
+
+                display: grid;
+                align-items: center;
+                grid-template-columns: 30px 1fr 30px 30px;
+
+                .#{$p}check-ball {
+                    height: 14px;
+                    width: 14px;
+                    border-radius: 50%;
+                    background-color: $fc1;
+                    cursor: pointer;
+                }
+
+                .#{$p}name-input {
+                    height: 30px;
+                    width: calc(100% - 10px);
+                    outline: none !important;
+                    border: none;
+                    background-color: transparent;
+                    color: $fc1;
+                }
+
+                .#{$p}item-count {
+                    margin: 0;
+                    padding: 0;
+                    font-size: $fc1;
+                }
+
+                svg {
+                    @extend .#{$p}svg-ctrl;
+                    height: 16px;
+                    width: 16px;
+                    padding: 7px;
+                }
+            }
+            
+            &.#{$p}active {
+                background-color: rgba(255, 255, 255, 0.03);
+                .#{$p}check-ball {
+                    background-color: $c1;
+                }
+            }
+            
+        }
+    }
+
+}

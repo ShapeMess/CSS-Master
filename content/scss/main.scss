@@ -1,24 +1,33 @@
 
 :root {
-    --cssm-bg1: #1a1b1b;
-    --cssm-bg2: #262829;
-    --cssm-bg3: #313435;
+    --cssm-bg1: #111111;
+    --cssm-bg2: #1f1f1f;
+    --cssm-bg3: #252425;
+    --cssm-bg4: #353435;
 
-    --cssm-c1: #1BDA94;
-    --cssm-c2: #0AEB98;
+    --cssm-c1: #DA4167;
+    --cssm-c1-o1: #da416780;
+    --cssm-c2: #7c36cc;
 
-    --cssm-fc1: #FFF5F9;
-    --cssm-fc2: #D9D2D5;
+    --cssm-fc1: #F0EFF4;
+    --cssm-fc2: #c7c7c7;
 
     --cssm-b-radius: 5px;
 
 }
 
 ._cssm_content-wrap {
-    position: fixed;
-    bottom: -100vh; left: -100vw;
+    position: absolute;
+    top: 0; left: 0;
     width: 0; height: 0;
+    pointer-events: none;
 }
 
-@import './partials/select-widget';
-@import './partials/ctx-menu';
+._cssm_::selection {
+    background-color: var(--cssm-c1-o1);
+}
+
+
+@import './partials/s-highlight.scss';
+@import './partials/ctx-menu.scss';
+@import './partials/groups.scss';

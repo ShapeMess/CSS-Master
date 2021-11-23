@@ -1,5 +1,6 @@
 import * as cst from '../consts.js';
-// Peripherals
+const getAll = (query) => document.querySelectorAll(`${cst.prefix}${query}`);
+const get = (query) => document.querySelector(`${cst.prefix}${query}`);
 const isDOM = (o) => typeof HTMLElement === "object" ?
     o instanceof HTMLElement : //DOM2
     o && typeof o === "object" && o !== null && o.nodeType === 1 && typeof o.nodeName === "string";
@@ -9,38 +10,100 @@ const isUiPart = (el) => {
     else
         return el.classList.contains(cst.prefix);
 };
-const query = (query) => document.querySelector(`${cst.prefix}${query}`);
-const queryAll = (query) => document.querySelectorAll(`${cst.prefix}${query}`);
-let queryTools = {
-    selection: null,
-    addClass: (string) => {
-        queryTools.selection.forEach(elem => elem.classList.add(`${cst.prefix}${string}`));
-        return queryTools;
-    },
-    removeClass: (string) => {
-        queryTools.selection.forEach(elem => elem.classList.remove(`${cst.prefix}${string}`));
-        return queryTools;
-    }
+const isArray = Array.isArray;
+let rootObject = {
+    selection: null
 };
-function select(query) {
+function root(query) {
     if (isDOM(query))
-        queryTools.selection = [query];
+        rootObject.selection = [query];
     else
-        queryTools.selection = queryAll(query);
-    return queryTools;
+        rootObject.selection = document.querySelectorAll(query);
+    return root;
 }
+root.items = () => rootObject.selection;
+root.addClass = (string) => {
+    rootObject.selection.forEach(elem => elem.classList.add(`${cst.prefix}${string}`));
+    return root;
+};
+root.removeClass = (string) => {
+    rootObject.selection.forEach(elem => elem.classList.remove(`${cst.prefix}${string}`));
+    return root;
+};
+root.toggleClass = (string) => {
+    rootObject.selection.forEach(elem => elem.classList.toggle(`${cst.prefix}${string}`));
+    return root;
+};
+root.areDOM = () => {
+    for (let i = 0; i < rootObject.selection.length; i++)
+        if (!isDOM(rootObject.selection[i]))
+            return false;
+    return true;
+};
+root.areUIParts = () => {
+    for (let i = 0; i < rootObject.selection.length; i++)
+        if (!isUiPart(rootObject.selection[i]))
+            return false;
+    return true;
+};
+root.desync = (callback) => {
+    setTimeout(callback, 0);
+    return root;
+};
+root.delete = () => {
+    rootObject.selection.forEach((elem) => elem.parentNode.removeChild(elem));
+    return root;
+};
+root.clearInlineCss = () => {
+    rootObject.selection.forEach((elem) => elem.removeAttribute('style'));
+    return root;
+};
+root.removeCssProperty = (property) => {
+    rootObject.selection.forEach((elem) => elem.style.removeProperty(property));
+    return root;
+};
+root.style = (property, value) => {
+    rootObject.selection.forEach((elem) => elem.style[property] = value);
+    return root;
+};
+root.on = (event, callback) => {
+    rootObject.selection.forEach((elem) => elem.addEventListener(event, callback));
+    return root;
+};
+globalThis.root = root;
 function createHTML(d) {
-    const t = document.createElement(d.tag);
+    // Extend object
+    if (d.$extend) {
+        if (d.$extend.tag && !d.tag)
+            d.tag = d.$extend.tag;
+        if (d.$extend.ns)
+            d.ns = d.$extend.ns;
+        if (d.$extend.evt)
+            d.evt = { ...d.$extend.evt, ...d.evt };
+        if (d.$extend.attr)
+            d.attr = { ...d.$extend.attr, ...d.attr };
+        if (d.$extend.use && !d.use)
+            d.use = d.$extend.use;
+        if (d.$extend.nodes && !d.nodes)
+            d.nodes = d.$extend.nodes;
+    }
+    const t = d.ns ?
+        document.createElementNS(d.ns, d.tag) :
+        document.createElement(d.tag);
     // default class used for distinguishing widgets from the content
     t.classList.add(cst.prefix);
     for (const key in d.attr) {
         if (Object.prototype.hasOwnProperty.call(d.attr, key)) {
-            if (key === 'id')
+            if (key === 'id' && !isArray(key))
                 t.setAttribute(key, `${cst.prefix}${d.attr[key]}`);
-            else if (key === 'class' || key === 'className')
+            else if ((key === 'class' || key === 'className') && !isArray(key))
                 d.attr[key].split(' ').forEach(word => t.classList.add(`${cst.prefix}${word}`));
-            else
-                t.setAttribute(key, d.attr[key]);
+            else {
+                if (Array.isArray(d.attr[key]))
+                    t.setAttributeNS(d.attr[key][0], key, d.attr[key][1]);
+                else
+                    t.setAttribute(key, d.attr[key]);
+            }
         }
     }
     for (const key in d.evt) {
@@ -57,6 +120,8 @@ function createHTML(d) {
             else if (typeof node === 'string')
                 t.append(node);
             else if (Object.prototype.hasOwnProperty.call(node, 'tag'))
+                t.appendChild(createHTML(node));
+            else if (Object.prototype.hasOwnProperty.call(node, '$extend'))
                 t.appendChild(createHTML(node));
         });
     if (d.use)
@@ -94,4 +159,4 @@ function makeDraggable(elem, dragHeader) {
         document.onmousemove = null;
     }
 }
-export { createHTML, makeDraggable, query, queryAll, isUiPart, select as t, isDOM };
+export { createHTML, makeDraggable, root as $ };

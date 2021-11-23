@@ -2,53 +2,108 @@
 import * as cst from '../consts.js';
 import * as T from '../types.d';
 
+const getAll = (query: string) => document.querySelectorAll(`${cst.prefix}${query}`);
+const get = (query: string) => document.querySelector(`${cst.prefix}${query}`);
 
-// Peripherals
 const isDOM = (o: any) => 
     typeof HTMLElement === "object" ? 
     o instanceof HTMLElement : //DOM2
     o && typeof o === "object" && o !== null && o.nodeType === 1 && typeof o.nodeName === "string";
-    
+
 const isUiPart = (el: any) => {
     if (!isDOM(el)) return false;
     else return el.classList.contains(cst.prefix);
 }
-const query = (query: string) => document.querySelector(`${cst.prefix}${query}`);
-const queryAll = (query: string) => document.querySelectorAll(`${cst.prefix}${query}`);
+const isArray = Array.isArray;
 
-
-let queryTools: T.QueryTools = {
-    selection: null,
-
-    addClass: (string) => {
-        queryTools.selection.forEach(elem => elem.classList.add(`${cst.prefix}${string}`));
-        return queryTools;
-    },
-    removeClass: (string) => {
-        queryTools.selection.forEach(elem => elem.classList.remove(`${cst.prefix}${string}`));
-        return queryTools;
-    }
-}
-function select(query: string|HTMLElement) {
-    if (isDOM(query)) queryTools.selection = [query as HTMLElement];
-    else              queryTools.selection = queryAll(query as string);
-    return queryTools;
+let rootObject = {
+    selection: null as (HTMLElement)[]|NodeListOf<Element>
 }
 
+function root (query: string|HTMLElement): typeof root {
+    if (isDOM(query)) rootObject.selection = [query as HTMLElement];
+    else              rootObject.selection = document.querySelectorAll(query as string);
+    return root;
+}
+
+root.items = () => rootObject.selection;
+
+root.addClass = (string: string) => {
+    rootObject.selection.forEach(elem => elem.classList.add(`${cst.prefix}${string}`));
+    return root;
+}
+root.removeClass = (string: string) => {
+    rootObject.selection.forEach(elem => elem.classList.remove(`${cst.prefix}${string}`));
+    return root;
+}
+root.toggleClass = (string: string) => {
+    rootObject.selection.forEach(elem => elem.classList.toggle(`${cst.prefix}${string}`));
+    return root;
+}
+root.areDOM = () => {
+    for (let i = 0; i < rootObject.selection.length; i++) if(!isDOM(rootObject.selection[i])) return false;
+    return true;
+}
+root.areUIParts = () => {
+    for (let i = 0; i < rootObject.selection.length; i++) if (!isUiPart(rootObject.selection[i])) return false;
+    return true;
+}
+root.desync = (callback: Function) => {
+    setTimeout(callback, 0);
+    return root;
+}
+root.delete = () => {
+    rootObject.selection.forEach((elem: HTMLElement) => elem.parentNode.removeChild(elem));
+    return root;
+}
+root.clearInlineCss = () => {
+    rootObject.selection.forEach((elem: HTMLElement) => elem.removeAttribute('style'));
+    return root;
+}
+root.removeCssProperty = (property: string) => {
+    rootObject.selection.forEach((elem: HTMLElement) => elem.style.removeProperty(property));
+    return root;
+}
+root.style = (property: string, value: string) => {
+    rootObject.selection.forEach((elem: HTMLElement) => elem.style[property] = value);
+    return root;
+}
+root.on = (event: string, callback: { (e: Event): void }) => {
+    rootObject.selection.forEach((elem: HTMLElement) => elem.addEventListener(event, callback));
+    return root;
+}
+
+
+globalThis.root = root;
 
 
 function createHTML(d: T.HTMLJsonMarkup) {
 
-    const t = document.createElement(d.tag);
+    // Extend object
+    if (d.$extend) {
+        if (d.$extend.tag && !d.tag)     d.tag =    d.$extend.tag;
+        if (d.$extend.ns)                d.ns =     d.$extend.ns;
+        if (d.$extend.evt)               d.evt =    {...d.$extend.evt,  ...d.evt} as any;
+        if (d.$extend.attr)              d.attr =   {...d.$extend.attr, ...d.attr};
+        if (d.$extend.use && !d.use)     d.use =    d.$extend.use;
+        if (d.$extend.nodes && !d.nodes) d.nodes =  d.$extend.nodes;
+    }
+
+    const t = d.ns ?
+        document.createElementNS(d.ns, d.tag) as HTMLElement :
+        document.createElement(d.tag)
 
     // default class used for distinguishing widgets from the content
     t.classList.add(cst.prefix);
 
     for (const key in d.attr) {
         if (Object.prototype.hasOwnProperty.call(d.attr, key)) {
-            if (key === 'id') t.setAttribute(key, `${cst.prefix}${d.attr[key]}`);
-            else if (key === 'class' || key === 'className') d.attr[key].split(' ').forEach(word => t.classList.add(`${cst.prefix}${word}`));
-            else t.setAttribute(key, d.attr[key]);
+            if (key === 'id' && !isArray(key)) t.setAttribute(key, `${cst.prefix}${d.attr[key]}`);
+            else if ((key === 'class' || key === 'className') && !isArray(key)) (d.attr[key] as string).split(' ').forEach(word => t.classList.add(`${cst.prefix}${word}`));
+            else {
+                if (Array.isArray(d.attr[key])) t.setAttributeNS(d.attr[key][0], key, d.attr[key][1]);
+                else t.setAttribute(key, d.attr[key] as string);
+            }
         }
     }
 
@@ -61,16 +116,16 @@ function createHTML(d: T.HTMLJsonMarkup) {
     }
 
     if (d.nodes) d.nodes.forEach(node => {
-        if (isDOM(node))                                            t.appendChild(node as HTMLElement);
-        else if (typeof node === 'string')                          t.append(node as string);
-        else if (Object.prototype.hasOwnProperty.call(node, 'tag')) t.appendChild(createHTML(node as T.HTMLJsonMarkup));
+        if (isDOM(node))                                                t.appendChild(node as HTMLElement);
+        else if (typeof node === 'string')                              t.append(node as string);
+        else if (Object.prototype.hasOwnProperty.call(node, 'tag'))     t.appendChild(createHTML(node as T.HTMLJsonMarkup));
+        else if (Object.prototype.hasOwnProperty.call(node, '$extend')) t.appendChild(createHTML(node as T.HTMLJsonMarkup));
     });
 
     if (d.use) d.use(t);
 
     return t;
 }
-
 function makeDraggable(elem: HTMLElement, dragHeader: HTMLDivElement) {
     var pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
 
@@ -108,13 +163,9 @@ function makeDraggable(elem: HTMLElement, dragHeader: HTMLDivElement) {
 }
 
 
-
 export { 
     createHTML, 
     makeDraggable,
-    query,
-    queryAll,
-    isUiPart,
-    select as t,
-    isDOM
+    
+    root as $
 }

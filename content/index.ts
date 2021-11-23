@@ -1,19 +1,24 @@
 
 import * as cst from './consts.js';
-import * as doc from './lib/doc.js';
-import * as sel from './lib/selection-manager.js';
-import * as ctx from './interface/context-menu.js';
+
+import initHighlight from './interface/select/s-highlight.js';
+import initWidgets from './interface/widgets.js';
+import Writable from './lib/writables.js';
+
 
 let hadInitialized = false;
 
 function main () {
-
     if (!hadInitialized) {
         hadInitialized = true;
-        
-        sel.initSelectionManagement();
 
-        document.body.appendChild(cst.contentWrap);
+        new Writable('select-element');
+        new Writable('scale-ratio', window.devicePixelRatio);
+
+        initHighlight();
+        initWidgets();
+
+        document.body.append(cst.contentWrap);
     }
 }
 
