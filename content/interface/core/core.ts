@@ -1,7 +1,8 @@
 
+import Writable from '../../lib/writables.js';
 import * as doc from '../../lib/doc.js';
 import * as cst from '../../consts.js';
-import Writable from '../../lib/writables.js';
+import * as highlight from '../select/s-highlight.js';
 
 import type * as T from '../../types';
 
@@ -11,6 +12,10 @@ type Div = HTMLDivElement;
 type P = HTMLParagraphElement;
 type Preset = T.HTMLJsonMarkupExtendable;
 
+/**
+ * SVG icon presets
+ * Used to clean up some mess when generating SVG graphics 
+ */
 const preset = {
     svgIco: {
         tag: 'svg',
@@ -29,17 +34,64 @@ const preset = {
 }
 
 let groupRegister: {[key: string]: ElementStylingGroup} = {};
-let getHexIdentifier = (): string => {
+
+/**
+ * Generates a unique hex code identifier for each element group.
+ * @returns Hex code
+ */
+const getHexIdentifier = (): string => {
     let hex = `#${Math.floor(Math.random()*16777215).toString(16)}`;
     if (groupRegister[hex]) return getHexIdentifier();
     else return hex;
 }
 
+/**
+ * Adds a group identifier to an element.
+ * @param group Styling group identifier
+ * @param element Element to add the identifier to
+ */
+ const addIdentifier = (group: string, element: Html) => {
+    let hasGroup = element.hasAttribute(cst.cssGroupAttr);
+    if (hasGroup) {
+        let attrs = element.getAttribute(cst.cssGroupAttr).split(',');
+        attrs.push(group);
+        element.setAttribute(cst.cssGroupAttr, attrs.join(','));
+    }
+    else element.setAttribute(cst.cssGroupAttr, group);
+}
+/**
+ * Removes a group identifier from an element.
+ * @param group Styling group identifier
+ * @param element Element to add the identifier to
+ */
+const removeIdentifier = (group: string, element: Html) => {
+    let hasGroup = element.hasAttribute(cst.cssGroupAttr);
+    if (hasGroup) {
+        let ids = element.getAttribute(cst.cssGroupAttr).split(',');
+        console.log(ids);
+        ids.splice(ids.indexOf(group), 1);
+        console.log(ids, ids.length);
+
+        if (ids.length > 0) element.setAttribute(cst.cssGroupAttr, ids.join(','));
+        else                element.removeAttribute(cst.cssGroupAttr);
+    }
+    else element.removeAttribute(cst.cssGroupAttr);  
+}
+
+
+const currentGroup = new Writable('current-group');
+
 export class ElementStylingGroup {
 
     changes: typeof cst.styleChangeRegisterTemplate;
     identifier: string;
+    targets: HTMLElement[] = [];
+
+    active = false;
+
     uiElement: HTMLElement;
+    listElement: HTMLElement;
+    elCountElement: P;
 
     constructor() {
         this.changes = {...cst.styleChangeRegisterTemplate};
@@ -69,7 +121,7 @@ export class ElementStylingGroup {
                         },
                         {
                             tag: 'input',
-                            attr: { type: 'text', className: 'name-input', value: this.identifier, spellcheck: false },
+                            attr: { type: 'text', className: 'name-input', value: `Group ${this.identifier}`, spellcheck: false },
                             evt: { 
                                 click: (e) => {
                                     let el = e.target as HTMLInputElement;
@@ -95,6 +147,37 @@ export class ElementStylingGroup {
                             ]
                         }
                     ]
+                },
+                {
+                    tag: 'div',
+                    attr: { className: 'elements-tab' },
+                    nodes: [
+                        {
+                            $extend: preset.svgIco,
+                            evt: { click: (e) => doc.$(this.uiElement).toggleClass('show-elems') },
+                            nodes: [
+                                { $extend: preset.svgPath, attr: { d: "M 1.6255252,4.6488124 7.9991992,12.428117 14.374475,4.6488124 Z" } },
+                                { $extend: preset.getSvgTitle('Show / hide elements') }
+                            ]
+                        },
+                        {
+                            tag: 'p',
+                            attr: { className: 'el-count' },
+                            use: (el: P) => this.elCountElement = el,
+                            nodes: [ 'Elements: (0)' ]
+                        }
+                    ]
+                },
+                {
+                    tag: 'div',
+                    attr: { className: 'elements-list' },
+                    nodes: [
+                        {
+                            tag: 'div',
+                            attr: { className: 'list-inner' },
+                            use: (el: Div) => this.listElement = el,
+                        }
+                    ]
                 }
             ]
         });
@@ -111,20 +194,137 @@ export class ElementStylingGroup {
         for (const key in groupRegister) {
             if (Object.prototype.hasOwnProperty.call(groupRegister, key)) {
                 const group = groupRegister[key];
+                group.active = false;
                 doc.$(group.uiElement).removeClass('active');
             }
         }
         doc.$(this.uiElement).addClass('active');
+        currentGroup.set(this.identifier);
+        this.active = true;
     }
     /**
      * Deletes the group entirely, does not delete DOM elements from markup.
      */
     delete(): void {
+
+        // Remove element attributes or specific group identifiers
+        for (const key in this.targets) {
+            if (Object.prototype.hasOwnProperty.call(this.targets, key)) {
+                removeIdentifier(this.identifier, this.targets[key]);
+            }
+        }
         // Delete the group
         delete groupRegister[this.identifier];
         // Remove identifiers from asiciated elements
-        doc.$(`[${cst.cssDataset}="${this.identifier}"]`).items().forEach((elem: HTMLElement) => elem.removeAttribute(cst.cssDataset));
+        doc.$(`[${cst.cssGroupAttr}="${this.identifier}"]`).items().forEach((elem: HTMLElement) => elem.removeAttribute(cst.cssGroupAttr));
         // Delete group from the UI
         doc.$(this.uiElement).delete();
+
+        // If this was the active group - select the first available one for user convinence
+        if (this.active) {
+            let groups = Object.keys(groupRegister);
+            if (groups.length > 0) groupRegister[groups[0]].select();
+        }
     }
+
+    updateState(): void {
+
+        this.elCountElement.textContent = `Elements: (${this.targets.length})`;
+
+        this.listElement.textContent = '';
+        this.targets.forEach(elem => {
+
+            const ID = elem.id.length > 0 ? ` #${elem.id}` : '';
+            const CLASS = elem.classList.length > 0 ? ` .${elem.classList.toString().split(' ').join('.')}` : '';
+            let ATTRS: string[] = [];
+
+            Array.from(elem.attributes).map(x => { if (!cst.disabledAttributes.includes(x.name)) ATTRS.push(`[${x.name}] `) });
+            if (ATTRS.length > 0) ATTRS.unshift(' ');
+
+            const TITLE = [elem.tagName, ID, CLASS, ATTRS.join(' ')].join('').replace(/  |   /g,' ');
+ 
+            const label = doc.createHTML({
+                tag: 'div',
+                attr: { class: 'elem', title: TITLE },
+                evt: { mouseEnter: () => highlight.setTarget(elem) },
+                nodes: [
+                    {
+                        tag: 'p',
+                        attr: { className: 'tag'},
+                        nodes: [elem.tagName]
+                    },
+                    {
+                        tag: 'p',
+                        attr: { className: 'id' },
+                        nodes: [ID]
+                    },
+                    {
+                        tag: 'p',
+                        attr: { className: 'class' },
+                        nodes: [CLASS]
+                    },
+                    {
+                        tag: 'p',
+                        attr: { className: 'attr' },
+                        nodes: ATTRS
+                    },
+                    {
+                        tag: 'div',
+                        attr: { className: 'el-options' },
+                        nodes: [
+                            {
+                                $extend: preset.svgIco,
+                                nodes: [
+                                    { $extend: preset.svgPath, attr: { d: "M 12.596194,1.9895924 8,6.5857864 3.4038059,1.9895924 1.9895924,3.4038059 6.5857864,8 1.9895924,12.596194 3.4038059,14.010408 8,9.4142136 12.596194,14.010408 14.010408,12.596194 9.4142136,8 14.010408,3.4038059 Z" } },
+                                    { $extend: preset.getSvgTitle('Remove element from the group.') }
+                                ],
+                                evt: {
+                                    click: () => {
+                                        this.removeTarget(elem);
+                                    }
+                                }
+                            }
+                        ]
+                    }
+                ]
+            })
+            this.listElement.appendChild(label);
+        });
+    }
+
+    addTarget(element: HTMLElement): void {
+        this.targets.push(element);
+        addIdentifier(this.identifier, element);
+        this.updateState();
+    }
+
+    removeTarget(element: HTMLElement): void {
+        this.targets.splice(this.targets.indexOf(element), 1);
+        removeIdentifier(this.identifier, element);
+        this.updateState();
+    }
+
+    hasTarget(element: HTMLElement): boolean {
+        return this.targets.includes(element);
+    }
+}
+
+
+export function addToGroup(group: string, element: HTMLElement) {
+    if (groupRegister[group]) 
+    if (!groupRegister[group].targets.includes(element)) {
+        groupRegister[group].addTarget(element);
+        groupRegister[group].updateState();
+    }
+
+}
+export function removeFromGroup(group: string, element: HTMLElement) {
+    if (groupRegister[group]) 
+    if (groupRegister[group].targets.includes(element)) {
+        groupRegister[group].removeTarget(element);
+        this.updateState();
+    }
+}
+export function getGroup(group: string): ElementStylingGroup|undefined {
+    return groupRegister[group];
 }

@@ -1,11 +1,13 @@
 
 $p: '_cssm_';
 $z: 15000;
+$z-peripherals: 15001;
 
 $c-bg1: var(--cssm-bg1);
 $c-bg2: var(--cssm-bg2);
 $c-bg3: var(--cssm-bg3);
 $c-bg4: var(--cssm-bg4);
+$c-bg5: var(--cssm-bg5);
 
 $c1: var(--cssm-c1);
 $c2: var(--cssm-c2);
@@ -31,15 +33,13 @@ $fc2: var(--cssm-fc2);
     z-index: $z;
 
     min-height: 100px;
-    max-height: 400px;
     width: 300px;
 
     top: 5vh;
-    left: 5vh;
+    right: 5vh;
 
     background-color: $c-bg1;
     border-radius: 5px;
-
     box-shadow: 0 0 7px rgba(0, 0, 0, 0.5);
 
     pointer-events: all;
@@ -59,6 +59,7 @@ $fc2: var(--cssm-fc2);
         cursor: move;
 
         p {
+            margin-left: 10px;
             color: $fc1;
         }
 
@@ -91,7 +92,8 @@ $fc2: var(--cssm-fc2);
 
     .#{$p}list {
         width: 100%;
-        height: 200px;
+        min-height: 150px;
+        max-height: 400px;
 
         overflow-y: auto;
 
@@ -103,15 +105,18 @@ $fc2: var(--cssm-fc2);
             min-height: 40px;
             background: $c-bg4;
         }
+        &::-webkit-scrollbar-thumb:hover {
+            background: $c-bg5;
+        }
 
         .#{$p}group {
             min-height: 30px;
             width: 100%;
+            border-bottom: solid 1px $c-bg2;
 
             .#{$p}group-tab {
                 height: 30px;
                 padding: 0 8px;
-                border-bottom: solid 1px $c-bg2;
 
                 display: grid;
                 align-items: center;
@@ -149,11 +154,128 @@ $fc2: var(--cssm-fc2);
             }
             
             &.#{$p}active {
-                background-color: rgba(255, 255, 255, 0.03);
+                background-color: $c-bg2;
                 .#{$p}check-ball {
                     background-color: $c1;
                 }
             }
+
+
+            .#{$p}elements-tab {
+                height: 30px;
+                display: flex;
+                align-items: center;
+
+                svg {
+                    @extend .#{$p}svg-ctrl;
+                    margin-left: 4px;
+                    padding: 4px;
+                }
+                .#{$p}el-count {
+                    color: $fc2;
+                    margin-left: 12px;
+                    user-select: none;
+                }
+            }
+            .#{$p}elements-list {
+                width: calc(100% - 20px);
+                display: none;
+                padding: 8px;
+                padding-top: 0px;
+                
+                .#{$p}list-inner {
+                    border: solid 1px $c-bg2;
+                    background-color: $c-bg1;
+                    padding: 8px;
+                    max-height: 200px;
+                    overflow-y: auto;
+
+                    &::-webkit-scrollbar {
+                        width: 10px;
+                        background: $c-bg2;
+                    }
+                    &::-webkit-scrollbar-thumb {
+                        min-height: 40px;
+                        background: $c-bg4;
+                    }
+                    &::-webkit-scrollbar-thumb:hover {
+                        background: $c-bg5;
+                    }
+
+                    .#{$p}elem {
+                        display: flex;
+                        overflow-x: hidden;
+                        border-radius: 5px;;
+                        position: relative;
+                        margin: 4px 0;
+
+                        &:after {
+                            content: '';
+                            display: block;
+                            position: absolute;
+                            top: 0; right: 0;
+                            height: 100%;
+                            width: 30px;
+                            background: linear-gradient(to right, transparent 0%, $c-bg1 50%);
+                        }
+
+                        &:hover {
+                            background: $c-bg2;
+                        }
+
+                        p {
+                            font-family: monospace;
+                            font-size: 13px;
+                            margin: 3px 0 3px 0;
+                            user-select: none;
+                            white-space: pre;
+                            
+                            &.#{$p}tag {
+                                color: var(--cssm-c3);
+                                margin-left: 8px;
+                            }
+                            &.#{$p}id {
+                                color: var(--cssm-c1);
+                            }
+                            &.#{$p}class {
+                                color: var(--cssm-c2);
+                            }
+                            &.#{$p}attr {
+                                color: var(--cssm-fc2);
+                            }
+                        }
+
+                        .#{$p}el-options {
+                            position: absolute;
+                            top: 0; right: 0;
+                            height: 100%;
+                            width: 40px;
+                            display: flex;
+                            align-items: center;
+                            justify-content: right;
+                            z-index: $z-peripherals;
+
+                            svg {
+                                @extend .#{$p}svg-ctrl;
+                                opacity: 0;
+                            }
+                        }
+                        &:hover svg {
+                            opacity: 1;
+                        }
+                    }
+                }
+            }
+
+            &.#{$p}show-elems {
+                .#{$p}elements-tab svg {
+                    transform: rotate(180deg);
+                }
+                .#{$p}elements-list {
+                    display: block;
+                }
+            }
+
             
         }
     }

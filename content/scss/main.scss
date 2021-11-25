@@ -1,19 +1,26 @@
 
 :root {
-    --cssm-bg1: #111111;
-    --cssm-bg2: #1f1f1f;
-    --cssm-bg3: #252425;
-    --cssm-bg4: #353435;
+    --cssm-bg1: #212333;
+    --cssm-bg2: #282B3E;
+    --cssm-bg3: #30334A;
+    --cssm-bg4: #404563;
+    --cssm-bg5: #51567B;
 
     --cssm-c1: #DA4167;
     --cssm-c1-o1: #da416780;
-    --cssm-c2: #7c36cc;
+    --cssm-c2: #9255d8;
+    --cssm-c3: #399dcc;
 
     --cssm-fc1: #F0EFF4;
     --cssm-fc2: #c7c7c7;
 
     --cssm-b-radius: 5px;
 
+}
+
+._cssm_ {
+    font-family: Arial !important;
+    font-size: 13px;
 }
 
 ._cssm_content-wrap {
@@ -31,3 +38,4 @@
 @import './partials/s-highlight.scss';
 @import './partials/ctx-menu.scss';
 @import './partials/groups.scss';
+@import './partials/control-tab.scss';

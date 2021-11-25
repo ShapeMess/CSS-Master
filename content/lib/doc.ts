@@ -98,8 +98,8 @@ function createHTML(d: T.HTMLJsonMarkup) {
 
     for (const key in d.attr) {
         if (Object.prototype.hasOwnProperty.call(d.attr, key)) {
-            if (key === 'id' && !isArray(key)) t.setAttribute(key, `${cst.prefix}${d.attr[key]}`);
-            else if ((key === 'class' || key === 'className') && !isArray(key)) (d.attr[key] as string).split(' ').forEach(word => t.classList.add(`${cst.prefix}${word}`));
+            if (key === 'id' && !isArray(d.attr[key])) t.setAttribute(key, `${cst.prefix}${d.attr[key]}`);
+            else if ((key === 'class' || key === 'className') && !isArray(d.attr[key])) (d.attr[key] as string).split(' ').forEach(word => t.classList.add(`${cst.prefix}${word}`));
             else {
                 if (Array.isArray(d.attr[key])) t.setAttributeNS(d.attr[key][0], key, d.attr[key][1]);
                 else t.setAttribute(key, d.attr[key] as string);

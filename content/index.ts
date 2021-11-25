@@ -1,7 +1,7 @@
 
 import * as cst from './consts.js';
 
-import initHighlight from './interface/select/s-highlight.js';
+import * as highlighter from './interface/select/s-highlight.js';
 import initWidgets from './interface/widgets.js';
 import Writable from './lib/writables.js';
 
@@ -13,9 +13,8 @@ function main () {
         hadInitialized = true;
 
         new Writable('select-element');
-        new Writable('scale-ratio', window.devicePixelRatio);
 
-        initHighlight();
+        highlighter.init();
         initWidgets();
 
         document.body.append(cst.contentWrap);

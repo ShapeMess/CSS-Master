@@ -6,6 +6,10 @@ type Span = HTMLSpanElement;
 type Div = HTMLDivElement;
 type HTElem = HTMLElement;
 
+let select = {
+    object: null as HTElem
+}
+
 function init() {
 
     const box = {
@@ -75,13 +79,10 @@ function init() {
     cst.contentWrap.append(line.bottom);
     cst.contentWrap.append(info.wrap);
 
-    let select = {
-        object: null as HTElem
-    }
 
     document.addEventListener('mouseover', (e) => {
         const el = e.target as HTElem;
-        if (!doc.$(el).areUIParts() && !cst.selectDisableTags.includes(el.tagName)) {
+        if (!doc.$(el).areUIParts() && !cst.selectionDisabledTags.includes(el.tagName)) {
             select.object = el;
             info.tag.textContent = el.tagName;
             info.id.textContent = el.id.length > 0 ? `#${el.id}` : '';
@@ -137,7 +138,13 @@ function init() {
     }
     trackFrame();
 
-
 }
 
-export default init;
+function setTarget(elem) {
+    select.object = elem;
+}
+
+export {
+    init,
+    setTarget
+};

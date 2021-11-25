@@ -18,14 +18,12 @@ const preset = {
         nodes: [title]
     })
 };
+let elems = {
+    handle: null,
+    list: null,
+    newGroup: null
+};
 function init() {
-    const selectElem = new Writable('select-element');
-    const scaleRatio = new Writable('scale-ratio');
-    let elems = {
-        handle: null,
-        list: null,
-        newGroup: null
-    };
     const menuElement = doc.createHTML({
         tag: 'div',
         attr: { className: 'group-manage' },
@@ -39,6 +37,10 @@ function init() {
                         tag: 'div',
                         attr: { className: 'btn-ball hide', title: 'Change widget opacity' },
                         evt: { click: () => doc.$(menuElement).toggleClass('opacity') }
+                    },
+                    {
+                        tag: 'p',
+                        nodes: ['Groups']
                     }
                 ]
             },
@@ -63,8 +65,10 @@ function init() {
             }
         ]
     });
-    elems.newGroup.addEventListener('click', () => {
+    (new Writable('group-list')).set(elems.list);
+    doc.$(elems.newGroup).on('click', (e) => {
         const group = new core.ElementStylingGroup();
+        group.select();
         elems.list.appendChild(group.uiElement);
     });
     doc.makeDraggable(menuElement, elems.handle);

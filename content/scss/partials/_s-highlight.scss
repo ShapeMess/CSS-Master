@@ -123,7 +123,7 @@ $toggle-btn-clr2: rgba(255, 255, 255, 0.15);
         transform: translateY(-1px);
 
         &.#{$p}tag {
-            color: rgb(241, 197, 210);
+            color: var(--cssm-c3);
         }
         &.#{$p}id {
             color: var(--cssm-c1);

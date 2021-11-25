@@ -1,8 +1,10 @@
+import Writable from '../../lib/writables.js';
 import * as cst from '../../consts.js';
 import * as doc from '../../lib/doc.js';
-import Writable from '../../lib/writables.js';
+import * as Core from '../core/core.js';
 const selectElem = new Writable('select-element');
-const scaleRatio = new Writable('scale-ratio');
+const currentGroup = new Writable('current-group');
+const gList = new Writable('group-list');
 let temp = {
     select: null
 };
@@ -13,7 +15,8 @@ let context = {
     tag: null,
     id: null,
     cls: null,
-    select: null,
+    addToGroup: null,
+    addToNewGroup: null,
     delete: null,
     clearCss: null,
     clearTransform: null
@@ -42,11 +45,11 @@ function init() {
                 nodes: [
                     {
                         tag: 'p',
-                        attr: { className: 'option', title: 'Add the element to currently active group\nfor styling.' },
-                        nodes: ['Add to group'],
-                        use: (el) => context.select = el,
+                        attr: { className: 'option', title: 'Add the element to the currently active group.' },
+                        nodes: ['Add'],
+                        use: (el) => context.addToGroup = el,
                         evt: {
-                            click: () => { selectElem.set(temp.select); hide(); }
+                            click: () => { Core.addToGroup(currentGroup.value, temp.select); hide(); }
                         }
                     },
                     {
@@ -55,7 +58,13 @@ function init() {
                         nodes: ['Delete'],
                         use: (el) => context.delete = el,
                         evt: {
-                            dblclick: () => { doc.$(temp.select).delete(); hide(); }
+                            dblclick: () => {
+                                const elGroup = temp.select.getAttribute(cst.cssGroupAttr);
+                                if (elGroup !== null)
+                                    Core.removeFromGroup(elGroup, temp.select);
+                                doc.$(temp.select).delete();
+                                hide();
+                            }
                         }
                     },
                     {
@@ -80,6 +89,21 @@ function init() {
                         evt: {
                             dblclick: () => { doc.$(temp.select).removeCssProperty('transform'); hide(); }
                         }
+                    },
+                    {
+                        tag: 'p',
+                        attr: { className: 'option', title: 'Select this element and add it to an entirely new group.' },
+                        nodes: ['Add to new group'],
+                        use: (el) => context.addToNewGroup = el,
+                        evt: {
+                            click: () => {
+                                const group = new Core.ElementStylingGroup();
+                                gList.value.appendChild(group.uiElement);
+                                group.addTarget(temp.select);
+                                group.select();
+                                hide();
+                            }
+                        }
                     }
                 ]
             }
@@ -95,7 +119,7 @@ function init() {
             context.tag.textContent = el.tagName;
             context.id.textContent = el.id.length > 0 ? `#${el.id}` : '';
             context.cls.textContent = el.classList.length > 0 ? `.${el.classList.toString().split(' ').join('.')}` : '';
-            if (cst.selectDisableTags.map(x => x.toUpperCase()).includes(el.tagName))
+            if (cst.selectionDisabledTags.map(x => x.toUpperCase()).includes(el.tagName))
                 doc.$(context.delete).addClass('disabled');
             else
                 doc.$(context.delete).removeClass('disabled');
@@ -116,11 +140,9 @@ function init() {
         if (!Object.values(context).includes(e.target))
             context.wrap.style.display = 'none';
     });
-    context.wrap.style.transform = `scale(${1 / window.devicePixelRatio})`;
-    scaleRatio.subscribe((value) => {
-        context.wrap.style.transform = `scale(${value})`;
-        context.wrap.style.display = 'none';
-    });
+    // document.addEventListener('keypress', (e) => {
+    //     if (e.code === 'Backquote')
+    // })
 }
 export default {
     init

@@ -94,9 +94,9 @@ function createHTML(d) {
     t.classList.add(cst.prefix);
     for (const key in d.attr) {
         if (Object.prototype.hasOwnProperty.call(d.attr, key)) {
-            if (key === 'id' && !isArray(key))
+            if (key === 'id' && !isArray(d.attr[key]))
                 t.setAttribute(key, `${cst.prefix}${d.attr[key]}`);
-            else if ((key === 'class' || key === 'className') && !isArray(key))
+            else if ((key === 'class' || key === 'className') && !isArray(d.attr[key]))
                 d.attr[key].split(' ').forEach(word => t.classList.add(`${cst.prefix}${word}`));
             else {
                 if (Array.isArray(d.attr[key]))

@@ -1,5 +1,8 @@
 import * as cst from '../../consts.js';
 import * as doc from '../../lib/doc.js';
+let select = {
+    object: null
+};
 function init() {
     const box = {
         m: doc.createHTML({ tag: 'div', attr: { className: 'gbox-margin' } }),
@@ -65,12 +68,9 @@ function init() {
     cst.contentWrap.append(line.top);
     cst.contentWrap.append(line.bottom);
     cst.contentWrap.append(info.wrap);
-    let select = {
-        object: null
-    };
     document.addEventListener('mouseover', (e) => {
         const el = e.target;
-        if (!doc.$(el).areUIParts() && !cst.selectDisableTags.includes(el.tagName)) {
+        if (!doc.$(el).areUIParts() && !cst.selectionDisabledTags.includes(el.tagName)) {
             select.object = el;
             info.tag.textContent = el.tagName;
             info.id.textContent = el.id.length > 0 ? `#${el.id}` : '';
@@ -119,4 +119,7 @@ function init() {
     }
     trackFrame();
 }
-export default init;
+function setTarget(elem) {
+    select.object = elem;
+}
+export { init, setTarget };

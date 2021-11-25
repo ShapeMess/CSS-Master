@@ -30,16 +30,13 @@ const preset = {
     })
 }
 
+let elems = {
+    handle: null as Div,
+    list: null as Div,
+    newGroup: null as Html
+}
+
 function init() {
-
-    const selectElem = new Writable('select-element');
-    const scaleRatio = new Writable('scale-ratio');
-
-    let elems = {
-        handle: null as Div,
-        list: null as Div,
-        newGroup: null as Html
-    }
 
     const menuElement = doc.createHTML({
         tag: 'div',
@@ -54,6 +51,10 @@ function init() {
                         tag: 'div',
                         attr: { className: 'btn-ball hide', title: 'Change widget opacity' },
                         evt: { click: () => doc.$(menuElement).toggleClass('opacity') }
+                    },
+                    {
+                        tag: 'p',
+                        nodes: ['Groups']
                     }
                 ]
             },
@@ -79,16 +80,13 @@ function init() {
         ]
     });
 
-    elems.newGroup.addEventListener('click', () => {
+    (new Writable('group-list')).set(elems.list);
+
+    doc.$(elems.newGroup).on('click', (e) => {
         const group = new core.ElementStylingGroup();
+        group.select();
         elems.list.appendChild(group.uiElement);
-    })
-
-
-
-
-
-
+    });
 
     doc.makeDraggable(menuElement, elems.handle);
     cst.contentWrap.append(menuElement);
@@ -100,10 +98,9 @@ function init() {
         if (rect.left < 0) menuElement.style.left = `0px`;
         if (rect.top < 0) menuElement.style.top = `0px`;
     });
-
-
-
 }
+
+
 
 export default {
     init

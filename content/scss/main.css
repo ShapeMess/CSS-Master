@@ -1,14 +1,21 @@
 :root {
-  --cssm-bg1: #111111;
-  --cssm-bg2: #1f1f1f;
-  --cssm-bg3: #252425;
-  --cssm-bg4: #353435;
+  --cssm-bg1: #212333;
+  --cssm-bg2: #282B3E;
+  --cssm-bg3: #30334A;
+  --cssm-bg4: #404563;
+  --cssm-bg5: #51567B;
   --cssm-c1: #DA4167;
   --cssm-c1-o1: #da416780;
-  --cssm-c2: #7c36cc;
+  --cssm-c2: #9255d8;
+  --cssm-c3: #399dcc;
   --cssm-fc1: #F0EFF4;
   --cssm-fc2: #c7c7c7;
   --cssm-b-radius: 5px;
+}
+
+._cssm_ {
+  font-family: Arial !important;
+  font-size: 13px;
 }
 
 ._cssm_content-wrap {
@@ -126,7 +133,7 @@
   transform: translateY(-1px);
 }
 ._cssm_elem-info span._cssm_tag {
-  color: #f1c5d2;
+  color: var(--cssm-c3);
 }
 ._cssm_elem-info span._cssm_id {
   color: var(--cssm-c1);
@@ -186,7 +193,7 @@
   margin-right: 4px;
 }
 ._cssm_ctx ._cssm_handle span._cssm_tag {
-  color: #f1c5d2;
+  color: var(--cssm-c3);
 }
 ._cssm_ctx ._cssm_handle span._cssm_id {
   color: var(--cssm-c1);
@@ -236,14 +243,14 @@
   border-color: transparent rgba(255, 255, 255, 0.2) transparent transparent;
 }
 
-._cssm_svg-ctrl, ._cssm_group-manage ._cssm_list ._cssm_group ._cssm_group-tab svg, ._cssm_group-manage ._cssm_ctrl-main svg {
+._cssm_svg-ctrl, ._cssm_group-manage ._cssm_list ._cssm_group ._cssm_elements-list ._cssm_list-inner ._cssm_elem ._cssm_el-options svg, ._cssm_group-manage ._cssm_list ._cssm_group ._cssm_elements-tab svg, ._cssm_group-manage ._cssm_list ._cssm_group ._cssm_group-tab svg, ._cssm_group-manage ._cssm_ctrl-main svg {
   cursor: pointer;
 }
-._cssm_svg-ctrl path, ._cssm_group-manage ._cssm_list ._cssm_group ._cssm_group-tab svg path, ._cssm_group-manage ._cssm_ctrl-main svg path {
+._cssm_svg-ctrl path, ._cssm_group-manage ._cssm_list ._cssm_group ._cssm_elements-list ._cssm_list-inner ._cssm_elem ._cssm_el-options svg path, ._cssm_group-manage ._cssm_list ._cssm_group ._cssm_elements-tab svg path, ._cssm_group-manage ._cssm_list ._cssm_group ._cssm_group-tab svg path, ._cssm_group-manage ._cssm_ctrl-main svg path {
   fill: var(--cssm-c1);
   transition: fill 0.15s;
 }
-._cssm_svg-ctrl:hover path, ._cssm_group-manage ._cssm_list ._cssm_group ._cssm_group-tab svg:hover path, ._cssm_group-manage ._cssm_ctrl-main svg:hover path {
+._cssm_svg-ctrl:hover path, ._cssm_group-manage ._cssm_list ._cssm_group ._cssm_elements-list ._cssm_list-inner ._cssm_elem ._cssm_el-options svg:hover path, ._cssm_group-manage ._cssm_list ._cssm_group ._cssm_elements-tab svg:hover path, ._cssm_group-manage ._cssm_list ._cssm_group ._cssm_group-tab svg:hover path, ._cssm_group-manage ._cssm_ctrl-main svg:hover path {
   fill: var(--cssm-fc1);
 }
 
@@ -252,10 +259,9 @@
   position: fixed;
   z-index: 15000;
   min-height: 100px;
-  max-height: 400px;
   width: 300px;
   top: 5vh;
-  left: 5vh;
+  right: 5vh;
   background-color: var(--cssm-bg1);
   border-radius: 5px;
   box-shadow: 0 0 7px rgba(0, 0, 0, 0.5);
@@ -276,6 +282,7 @@
   cursor: move;
 }
 ._cssm_group-manage ._cssm_handle p {
+  margin-left: 10px;
   color: var(--cssm-fc1);
 }
 ._cssm_group-manage ._cssm_handle ._cssm_btn-ball {
@@ -303,7 +310,8 @@
 }
 ._cssm_group-manage ._cssm_list {
   width: 100%;
-  height: 200px;
+  min-height: 150px;
+  max-height: 400px;
   overflow-y: auto;
 }
 ._cssm_group-manage ._cssm_list::-webkit-scrollbar {
@@ -314,14 +322,17 @@
   min-height: 40px;
   background: var(--cssm-bg4);
 }
+._cssm_group-manage ._cssm_list::-webkit-scrollbar-thumb:hover {
+  background: var(--cssm-bg5);
+}
 ._cssm_group-manage ._cssm_list ._cssm_group {
   min-height: 30px;
   width: 100%;
+  border-bottom: solid 1px var(--cssm-bg2);
 }
 ._cssm_group-manage ._cssm_list ._cssm_group ._cssm_group-tab {
   height: 30px;
   padding: 0 8px;
-  border-bottom: solid 1px var(--cssm-bg2);
   display: grid;
   align-items: center;
   grid-template-columns: 30px 1fr 30px 30px;
@@ -352,8 +363,115 @@
   padding: 7px;
 }
 ._cssm_group-manage ._cssm_list ._cssm_group._cssm_active {
-  background-color: rgba(255, 255, 255, 0.03);
+  background-color: var(--cssm-bg2);
 }
 ._cssm_group-manage ._cssm_list ._cssm_group._cssm_active ._cssm_check-ball {
   background-color: var(--cssm-c1);
+}
+._cssm_group-manage ._cssm_list ._cssm_group ._cssm_elements-tab {
+  height: 30px;
+  display: flex;
+  align-items: center;
+}
+._cssm_group-manage ._cssm_list ._cssm_group ._cssm_elements-tab svg {
+  margin-left: 4px;
+  padding: 4px;
+}
+._cssm_group-manage ._cssm_list ._cssm_group ._cssm_elements-tab ._cssm_el-count {
+  color: var(--cssm-fc2);
+  margin-left: 12px;
+  -webkit-user-select: none;
+     -moz-user-select: none;
+      -ms-user-select: none;
+          user-select: none;
+}
+._cssm_group-manage ._cssm_list ._cssm_group ._cssm_elements-list {
+  width: calc(100% - 20px);
+  display: none;
+  padding: 8px;
+  padding-top: 0px;
+}
+._cssm_group-manage ._cssm_list ._cssm_group ._cssm_elements-list ._cssm_list-inner {
+  border: solid 1px var(--cssm-bg2);
+  background-color: var(--cssm-bg1);
+  padding: 8px;
+  max-height: 200px;
+  overflow-y: auto;
+}
+._cssm_group-manage ._cssm_list ._cssm_group ._cssm_elements-list ._cssm_list-inner::-webkit-scrollbar {
+  width: 10px;
+  background: var(--cssm-bg2);
+}
+._cssm_group-manage ._cssm_list ._cssm_group ._cssm_elements-list ._cssm_list-inner::-webkit-scrollbar-thumb {
+  min-height: 40px;
+  background: var(--cssm-bg4);
+}
+._cssm_group-manage ._cssm_list ._cssm_group ._cssm_elements-list ._cssm_list-inner::-webkit-scrollbar-thumb:hover {
+  background: var(--cssm-bg5);
+}
+._cssm_group-manage ._cssm_list ._cssm_group ._cssm_elements-list ._cssm_list-inner ._cssm_elem {
+  display: flex;
+  overflow-x: hidden;
+  border-radius: 5px;
+  position: relative;
+  margin: 4px 0;
+}
+._cssm_group-manage ._cssm_list ._cssm_group ._cssm_elements-list ._cssm_list-inner ._cssm_elem:after {
+  content: "";
+  display: block;
+  position: absolute;
+  top: 0;
+  right: 0;
+  height: 100%;
+  width: 30px;
+  background: linear-gradient(to right, transparent 0%, var(--cssm-bg1) 50%);
+}
+._cssm_group-manage ._cssm_list ._cssm_group ._cssm_elements-list ._cssm_list-inner ._cssm_elem:hover {
+  background: var(--cssm-bg2);
+}
+._cssm_group-manage ._cssm_list ._cssm_group ._cssm_elements-list ._cssm_list-inner ._cssm_elem p {
+  font-family: monospace;
+  font-size: 13px;
+  margin: 3px 0 3px 0;
+  -webkit-user-select: none;
+     -moz-user-select: none;
+      -ms-user-select: none;
+          user-select: none;
+  white-space: pre;
+}
+._cssm_group-manage ._cssm_list ._cssm_group ._cssm_elements-list ._cssm_list-inner ._cssm_elem p._cssm_tag {
+  color: var(--cssm-c3);
+  margin-left: 8px;
+}
+._cssm_group-manage ._cssm_list ._cssm_group ._cssm_elements-list ._cssm_list-inner ._cssm_elem p._cssm_id {
+  color: var(--cssm-c1);
+}
+._cssm_group-manage ._cssm_list ._cssm_group ._cssm_elements-list ._cssm_list-inner ._cssm_elem p._cssm_class {
+  color: var(--cssm-c2);
+}
+._cssm_group-manage ._cssm_list ._cssm_group ._cssm_elements-list ._cssm_list-inner ._cssm_elem p._cssm_attr {
+  color: var(--cssm-fc2);
+}
+._cssm_group-manage ._cssm_list ._cssm_group ._cssm_elements-list ._cssm_list-inner ._cssm_elem ._cssm_el-options {
+  position: absolute;
+  top: 0;
+  right: 0;
+  height: 100%;
+  width: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: right;
+  z-index: 15001;
+}
+._cssm_group-manage ._cssm_list ._cssm_group ._cssm_elements-list ._cssm_list-inner ._cssm_elem ._cssm_el-options svg {
+  opacity: 0;
+}
+._cssm_group-manage ._cssm_list ._cssm_group ._cssm_elements-list ._cssm_list-inner ._cssm_elem:hover svg {
+  opacity: 1;
+}
+._cssm_group-manage ._cssm_list ._cssm_group._cssm_show-elems ._cssm_elements-tab svg {
+  transform: rotate(180deg);
+}
+._cssm_group-manage ._cssm_list ._cssm_group._cssm_show-elems ._cssm_elements-list {
+  display: block;
 }/*# sourceMappingURL=main.css.map */
