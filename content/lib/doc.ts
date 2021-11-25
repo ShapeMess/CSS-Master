@@ -73,11 +73,9 @@ root.on = (event: string, callback: { (e: Event): void }) => {
     return root;
 }
 
-
 globalThis.root = root;
 
-
-function createHTML(d: T.HTMLJsonMarkup) {
+export function createHTML(d: T.HTMLJsonMarkup) {
 
     // Extend object
     if (d.$extend) {
@@ -126,7 +124,7 @@ function createHTML(d: T.HTMLJsonMarkup) {
 
     return t;
 }
-function makeDraggable(elem: HTMLElement, dragHeader: HTMLDivElement) {
+export function makeDraggable(elem: HTMLElement, dragHeader: HTMLDivElement) {
     var pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
 
     dragHeader.onmousedown = dragMouseDown;
@@ -161,11 +159,22 @@ function makeDraggable(elem: HTMLElement, dragHeader: HTMLDivElement) {
         document.onmousemove = null;
     }
 }
+export function getElementInfo(elem: HTMLElement) {
+    const ID = elem.id.length > 0 ? ` #${elem.id}` : '';
+    const CLASS = elem.classList.length > 0 ? ` .${Array.from(elem.classList).join('.')}` : '';
+    let ATTRS: string[] = []
 
-
-export { 
-    createHTML, 
-    makeDraggable,
+    Array.from(elem.attributes).map(x => { if (!cst.disabledAttributes.includes(x.name)) ATTRS.push(`[${x.name}] `) });
+    if (ATTRS.length > 0) ATTRS.unshift(' ')
     
-    root as $
+    const TITLE = [elem.tagName, ID, CLASS, ATTRS.join(' ')].join('').replace(/  |   /g, ' ').replace('[', '\n[');
+
+    return {
+        id: ID,
+        classes: CLASS,
+        attrs: ATTRS,
+        title: TITLE
+    }
 }
+
+export { root as $ }

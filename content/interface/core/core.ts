@@ -215,8 +215,6 @@ export class ElementStylingGroup {
         }
         // Delete the group
         delete groupRegister[this.identifier];
-        // Remove identifiers from asiciated elements
-        doc.$(`[${cst.cssGroupAttr}="${this.identifier}"]`).items().forEach((elem: HTMLElement) => elem.removeAttribute(cst.cssGroupAttr));
         // Delete group from the UI
         doc.$(this.uiElement).delete();
 
@@ -234,18 +232,11 @@ export class ElementStylingGroup {
         this.listElement.textContent = '';
         this.targets.forEach(elem => {
 
-            const ID = elem.id.length > 0 ? ` #${elem.id}` : '';
-            const CLASS = elem.classList.length > 0 ? ` .${elem.classList.toString().split(' ').join('.')}` : '';
-            let ATTRS: string[] = [];
-
-            Array.from(elem.attributes).map(x => { if (!cst.disabledAttributes.includes(x.name)) ATTRS.push(`[${x.name}] `) });
-            if (ATTRS.length > 0) ATTRS.unshift(' ');
-
-            const TITLE = [elem.tagName, ID, CLASS, ATTRS.join(' ')].join('').replace(/  |   /g,' ');
+            const elInfo = doc.getElementInfo(elem);
  
             const label = doc.createHTML({
                 tag: 'div',
-                attr: { class: 'elem', title: TITLE },
+                attr: { class: 'elem', title: elInfo.title },
                 evt: { mouseEnter: () => highlight.setTarget(elem) },
                 nodes: [
                     {
@@ -256,17 +247,17 @@ export class ElementStylingGroup {
                     {
                         tag: 'p',
                         attr: { className: 'id' },
-                        nodes: [ID]
+                        nodes: [elInfo.id]
                     },
                     {
                         tag: 'p',
                         attr: { className: 'class' },
-                        nodes: [CLASS]
+                        nodes: [elInfo.classes]
                     },
                     {
                         tag: 'p',
                         attr: { className: 'attr' },
-                        nodes: ATTRS
+                        nodes: elInfo.attrs
                     },
                     {
                         tag: 'div',

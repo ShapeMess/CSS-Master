@@ -71,7 +71,7 @@ root.on = (event, callback) => {
     return root;
 };
 globalThis.root = root;
-function createHTML(d) {
+export function createHTML(d) {
     // Extend object
     if (d.$extend) {
         if (d.$extend.tag && !d.tag)
@@ -128,7 +128,7 @@ function createHTML(d) {
         d.use(t);
     return t;
 }
-function makeDraggable(elem, dragHeader) {
+export function makeDraggable(elem, dragHeader) {
     var pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
     dragHeader.onmousedown = dragMouseDown;
     function dragMouseDown(e) {
@@ -159,4 +159,20 @@ function makeDraggable(elem, dragHeader) {
         document.onmousemove = null;
     }
 }
-export { createHTML, makeDraggable, root as $ };
+export function getElementInfo(elem) {
+    const ID = elem.id.length > 0 ? ` #${elem.id}` : '';
+    const CLASS = elem.classList.length > 0 ? ` .${Array.from(elem.classList).join('.')}` : '';
+    let ATTRS = [];
+    Array.from(elem.attributes).map(x => { if (!cst.disabledAttributes.includes(x.name))
+        ATTRS.push(`[${x.name}] `); });
+    if (ATTRS.length > 0)
+        ATTRS.unshift(' ');
+    const TITLE = [elem.tagName, ID, CLASS, ATTRS.join(' ')].join('').replace(/  |   /g, ' ').replace('[', '\n[');
+    return {
+        id: ID,
+        classes: CLASS,
+        attrs: ATTRS,
+        title: TITLE
+    };
+}
+export { root as $ };

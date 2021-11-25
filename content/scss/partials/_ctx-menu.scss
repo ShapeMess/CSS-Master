@@ -36,21 +36,29 @@ $fc1: var(--cssm-fc1);
         overflow-x: hidden;
         cursor: move;
 
-        span {
-            font-family: monospace;
-            font-size: 13.5px;
-            pointer-events: none;
-
-            margin-right: 4px;
-
-            &.#{$p}tag {
-                color: var(--cssm-c3);
-            }
-            &.#{$p}id {
-                color: var(--cssm-c1);
-            }
-            &.#{$p}cls {
-                color: var(--cssm-c2);
+        .#{$p}el-info-wrap {
+            display: flex;
+            align-items: center;
+            span {
+                font-family: monospace;
+                font-size: 13.5px;
+                pointer-events: none;
+                margin-right: 4px;
+    
+                &.#{$p}tag {
+                    color: var(--cssm-c3);
+                }
+                &.#{$p}id {
+                    color: var(--cssm-c1);
+                    white-space: nowrap;
+                    overflow: hidden;
+                }
+                &.#{$p}cls {
+                    color: var(--cssm-c2);
+                    white-space: nowrap;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                }
             }
         }
 

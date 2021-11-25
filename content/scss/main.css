@@ -5,11 +5,12 @@
   --cssm-bg4: #404563;
   --cssm-bg5: #51567B;
   --cssm-c1: #DA4167;
-  --cssm-c1-o1: #da416780;
+  --cssm-c1-05: #DA416780;
+  --cssm-c1-01: #d93f661a;
   --cssm-c2: #9255d8;
   --cssm-c3: #399dcc;
   --cssm-fc1: #F0EFF4;
-  --cssm-fc2: #c7c7c7;
+  --cssm-fc2: #6d7085;
   --cssm-b-radius: 5px;
 }
 
@@ -76,13 +77,13 @@
 }
 
 ._cssm_gbox-margin {
-  border: dashed 1px #b200d6;
+  border: dashed 1px var(--cssm-c2);
   z-index: 10002;
 }
 
 ._cssm_gbox-body {
-  border: solid 1px #0080d6;
-  background: rgba(0, 128, 214, 0.11);
+  border: solid 1px var(--cssm-c1);
+  background: var(--cssm-c1-01);
   z-index: 10001;
 }
 
@@ -186,20 +187,29 @@
   overflow-x: hidden;
   cursor: move;
 }
-._cssm_ctx ._cssm_handle span {
+._cssm_ctx ._cssm_handle ._cssm_el-info-wrap {
+  display: flex;
+  align-items: center;
+}
+._cssm_ctx ._cssm_handle ._cssm_el-info-wrap span {
   font-family: monospace;
   font-size: 13.5px;
   pointer-events: none;
   margin-right: 4px;
 }
-._cssm_ctx ._cssm_handle span._cssm_tag {
+._cssm_ctx ._cssm_handle ._cssm_el-info-wrap span._cssm_tag {
   color: var(--cssm-c3);
 }
-._cssm_ctx ._cssm_handle span._cssm_id {
+._cssm_ctx ._cssm_handle ._cssm_el-info-wrap span._cssm_id {
   color: var(--cssm-c1);
+  white-space: nowrap;
+  overflow: hidden;
 }
-._cssm_ctx ._cssm_handle span._cssm_cls {
+._cssm_ctx ._cssm_handle ._cssm_el-info-wrap span._cssm_cls {
   color: var(--cssm-c2);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 ._cssm_ctx ._cssm_handle div._cssm_shadow {
   position: absolute;

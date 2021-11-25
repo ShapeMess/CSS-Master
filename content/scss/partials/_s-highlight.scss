@@ -9,9 +9,9 @@ $zib: 20000;
 $c-bg1: var(--cssm-bg1);
 
 $gline-color: #ffffff;
-$body-color: #0080d6;
-$body-color-bg: rgba(0, 128, 214, 0.11);
-$margin-color: #b200d6;
+$body-color: var(--cssm-c1);
+$body-color-bg: var(--cssm-c1-01);
+$margin-color: var(--cssm-c2);
 
 $toggle-btn-clr1: var(--cssm-c1);
 $toggle-btn-clr2: rgba(255, 255, 255, 0.15);

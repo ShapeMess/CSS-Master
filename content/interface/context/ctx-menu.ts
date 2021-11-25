@@ -46,12 +46,16 @@ function init() {
                 tag: 'div',
                 attr: { className: 'handle' },
                 use: (el: Div) => context.handle = el,
-                nodes: [
-                    { tag: 'span', attr: { className: 'tag' }, use: el => context.tag = el },
-                    { tag: 'span', attr: { className: 'id'  }, use: el => context.id = el  },
-                    { tag: 'span', attr: { className: 'cls' }, use: el => context.cls = el },
-                    { tag: 'div',  attr: { className: 'shadow' } }
-                ]
+                nodes: [{
+                    tag: 'div',
+                    attr: { className: 'el-info-wrap' },
+                    nodes: [
+                        { tag: 'span', attr: { className: 'tag' }, use: el => context.tag = el },
+                        { tag: 'span', attr: { className: 'id'  }, use: el => context.id = el  },
+                        { tag: 'span', attr: { className: 'cls' }, use: el => context.cls = el },
+                        { tag: 'div',  attr: { className: 'shadow' } }
+                    ]
+                }]
             },
             {
                 tag: 'div',
@@ -133,10 +137,15 @@ function init() {
             const el = e.target as HTMLElement;
             temp.select = el;
 
-            context.tag.textContent = el.tagName;
-            context.id.textContent = el.id.length > 0 ? `#${el.id}` : '';
-            context.cls.textContent = el.classList.length > 0 ? `.${el.classList.toString().split(' ').join('.')}` : '';
+            // Getting attributes + generating title
+            const elInfo = doc.getElementInfo(el);
             
+            context.tag.textContent = el.tagName;
+            context.id.textContent = elInfo.id;
+            context.cls.textContent = elInfo.classes;
+            context.handle.title = elInfo.title;
+
+
             if (cst.selectionDisabledTags.map(x => x.toUpperCase()).includes(el.tagName)) doc.$(context.delete).addClass('disabled');
             else doc.$(context.delete).removeClass('disabled');
 

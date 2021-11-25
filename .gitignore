@@ -1,0 +1,13 @@
+
+.vscode/settings.json
+
+content/interface/context/tsconfig.json
+content/interface/core/tsconfig.json
+content/interface/main-tab/tsconfig.json
+content/interface/select/tsconfig.json
+content/interface/settings/tsconfig.json
+content/interface/tsconfig.json
+content/lib/tsconfig.json
+
+content/scss/main.css.map
+content/tsconfig.json
