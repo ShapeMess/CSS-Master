@@ -143,6 +143,12 @@ $toggle-btn-clr2: rgba(255, 255, 255, 0.15);
 }
 
 
+.#{$p}group-highlighter {
+    @extend .#{$p}base;
+    border: dashed 1px $body-color;
+
+}
+
 .#{$p}y-scrollbar-check {
     height: 0;
     width: 100%;

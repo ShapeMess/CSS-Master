@@ -7,9 +7,16 @@ export const selectionDisabledTags = [ 'html', 'body', 'head', 'meta', 'link', '
 export const disabledAttributes = ['id', 'class', cssGroupAttr ];
 
 
+// Custom page styling classes (contain prefixes)
+export const cls = {
+    bodyCrosshair: 'b-crosshair'
+}
+
+
 export const contentWrap = document.createElement('div');
 contentWrap.classList.add(`${prefix}content-wrap`);
 
+
 export const styleChangeRegisterTemplate = {
-    display: null as string
+    // display: null as string
 }

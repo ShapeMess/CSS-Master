@@ -33,7 +33,11 @@
 }
 
 ._cssm_::selection {
-    background-color: var(--cssm-c1-o1);
+    background-color: var(--cssm-c1-05);
+}
+
+body {
+    &._cssm_b-crosshair { cursor: crosshair !important; }
 }
 
 

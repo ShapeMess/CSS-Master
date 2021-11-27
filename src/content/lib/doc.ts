@@ -17,7 +17,7 @@ const isUiPart = (el: any) => {
 const isArray = Array.isArray;
 
 let rootObject = {
-    selection: null as (HTMLElement)[]|NodeListOf<Element>
+    selection: null as HTMLElement[]|NodeListOf<HTMLElement>
 }
 
 function root (query: string|HTMLElement): typeof root {
@@ -48,28 +48,28 @@ root.areUIParts = () => {
     for (let i = 0; i < rootObject.selection.length; i++) if (!isUiPart(rootObject.selection[i])) return false;
     return true;
 }
-root.desync = (callback: Function) => {
+root.desync = (callback?: Function) => {
     setTimeout(callback, 0);
     return root;
 }
-root.delete = () => {
-    rootObject.selection.forEach((elem: HTMLElement) => elem.parentNode.removeChild(elem));
+root.delete = () => { // Debug purposes
+    for (let i = 0; i < rootObject.selection.length; i++) rootObject.selection[i].parentNode.removeChild(rootObject.selection[i]);
     return root;
 }
 root.clearInlineCss = () => {
-    rootObject.selection.forEach((elem: HTMLElement) => elem.removeAttribute('style'));
+    for (let i = 0; i < rootObject.selection.length; i++) rootObject.selection[i].removeAttribute('style');
     return root;
 }
 root.removeCssProperty = (property: string) => {
-    rootObject.selection.forEach((elem: HTMLElement) => elem.style.removeProperty(property));
+    for (let i = 0; i < rootObject.selection.length; i++) rootObject.selection[i].style.removeProperty(property);
     return root;
 }
 root.style = (property: string, value: string) => {
-    rootObject.selection.forEach((elem: HTMLElement) => elem.style[property] = value);
+    for (let i = 0; i < rootObject.selection.length; i++) rootObject.selection[i].style[property] = value;
     return root;
 }
 root.on = (event: string, callback: { (e: Event): void }) => {
-    rootObject.selection.forEach((elem: HTMLElement) => elem.addEventListener(event, callback));
+    for (let i = 0; i < rootObject.selection.length; i++) rootObject.selection[i].addEventListener(event, callback);
     return root;
 }
 
@@ -89,7 +89,7 @@ export function createHTML(d: T.HTMLJsonMarkup) {
 
     const t = d.ns ?
         document.createElementNS(d.ns, d.tag) as HTMLElement :
-        document.createElement(d.tag)
+        document.createElement(d.tag as string)
 
     // default class used for distinguishing widgets from the content
     t.classList.add(cst.prefix);

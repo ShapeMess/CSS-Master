@@ -2,7 +2,7 @@
 import Writable from '../../lib/writables.js';
 import * as doc from '../../lib/doc.js';
 import * as cst from '../../consts.js';
-import * as highlight from '../select/s-highlight.js';
+import * as highlight from '../select/selection-highlighting.js';
 
 import type * as T from '../../types';
 
@@ -78,20 +78,31 @@ const removeIdentifier = (group: string, element: Html) => {
     else element.removeAttribute(cst.cssGroupAttr);  
 }
 
-
 const currentGroup = new Writable('current-group');
+
+interface GroupHighlighterObject {
+    target: Html,
+    highlighter: Html,
+}
 
 export class ElementStylingGroup {
 
-    changes: typeof cst.styleChangeRegisterTemplate;
-    identifier: string;
-    targets: HTMLElement[] = [];
+    private hElClass = 'group-highlighter';
 
-    active = false;
+    public changes: typeof cst.styleChangeRegisterTemplate;
+    public identifier: string;
+    public targets: HTMLElement[] = [];
 
-    uiElement: HTMLElement;
-    listElement: HTMLElement;
-    elCountElement: P;
+    public uiElement: HTMLElement;
+    public listElement: HTMLElement;
+    public elCountElement: P;
+
+    public active = false;
+    private nameInputActive = false;
+
+    private highlighters: GroupHighlighterObject[] = [];
+    private highlightFrameID: number;
+    private highlighted = false;
 
     constructor() {
         this.changes = {...cst.styleChangeRegisterTemplate};
@@ -104,6 +115,7 @@ export class ElementStylingGroup {
             generateCss: null as Html,
             checkBall: null as Html,
             itemCount: null as P,
+            highlightElems: null as Html
         }
 
         this.uiElement = doc.createHTML({
@@ -125,9 +137,13 @@ export class ElementStylingGroup {
                             evt: { 
                                 click: (e) => {
                                     let el = e.target as HTMLInputElement;
-                                    el.selectionStart = 0;
-                                    el.selectionEnd = el.value.length;
-                                }
+                                    if (!this.nameInputActive) {
+                                        this.nameInputActive = true;
+                                        el.selectionStart = 0;
+                                        el.selectionEnd = el.value.length;
+                                    }
+                                },
+                                blur: (e) => this.nameInputActive = false
                             }
                         },
                         {
@@ -136,6 +152,14 @@ export class ElementStylingGroup {
                             nodes: [
                                 { $extend: preset.svgPath, attr: { d: "M 12.596194,1.9895924 8,6.5857864 3.4038059,1.9895924 1.9895924,3.4038059 6.5857864,8 1.9895924,12.596194 3.4038059,14.010408 8,9.4142136 12.596194,14.010408 14.010408,12.596194 9.4142136,8 14.010408,3.4038059 Z" } },
                                 { $extend: preset.getSvgTitle('Delete group\n(double-click)') }
+                            ]
+                        },
+                        {
+                            $extend: preset.svgIco,
+                            use: el => elems.highlightElems = el,
+                            nodes: [
+                                { $extend: preset.svgPath, attr: { d: "m 13.663867,2.336133 a 4.2402268,4.2402268 0 0 0 -5.9965864,0 4.2402268,4.2402268 0 0 0 -0.4919075,5.3901605 L 5.7582111,8.5760702 1.0941997,13.240082 2.7599181,14.905801 7.4239296,10.241789 8.2698022,8.8311334 a 4.2402268,4.2402268 0 0 0 5.3940648,-0.4984141 4.2402268,4.2402268 0 0 0 0,-5.9965863 z m -0.999431,0.9994311 a 2.8268178,2.8268178 0 0 1 0,3.997724 2.8268178,2.8268178 0 0 1 -3.9977243,0 2.8268178,2.8268178 0 0 1 0,-3.997724 2.8268178,2.8268178 0 0 1 3.9977243,0 z" } },
+                                { $extend: preset.getSvgTitle('Highlight elements') }
                             ]
                         },
                         {
@@ -181,16 +205,18 @@ export class ElementStylingGroup {
                 }
             ]
         });
-        
+    
         doc.$(elems.checkBall).on('click', () => this.select());
         doc.$(elems.delete).on('dblclick', () => this.delete());
+        doc.$(elems.highlightElems).on('click', () => {
+            this.highlighted ?
+                this.stopHighlighting() :
+                this.startHighlighting();
+        });
 
     }
 
-    /**
-     * Changes the active group of elements.
-     */
-    select(): void {
+    public select(): void {
         for (const key in groupRegister) {
             if (Object.prototype.hasOwnProperty.call(groupRegister, key)) {
                 const group = groupRegister[key];
@@ -201,11 +227,10 @@ export class ElementStylingGroup {
         doc.$(this.uiElement).addClass('active');
         currentGroup.set(this.identifier);
         this.active = true;
+        this.updateState();
     }
-    /**
-     * Deletes the group entirely, does not delete DOM elements from markup.
-     */
-    delete(): void {
+
+    public delete(): void {
 
         // Remove element attributes or specific group identifiers
         for (const key in this.targets) {
@@ -213,9 +238,8 @@ export class ElementStylingGroup {
                 removeIdentifier(this.identifier, this.targets[key]);
             }
         }
-        // Delete the group
+        
         delete groupRegister[this.identifier];
-        // Delete group from the UI
         doc.$(this.uiElement).delete();
 
         // If this was the active group - select the first available one for user convinence
@@ -225,7 +249,7 @@ export class ElementStylingGroup {
         }
     }
 
-    updateState(): void {
+    public updateState(): void {
 
         this.elCountElement.textContent = `Elements: (${this.targets.length})`;
 
@@ -281,22 +305,78 @@ export class ElementStylingGroup {
             })
             this.listElement.appendChild(label);
         });
+
+        if (this.highlighted) this.startHighlighting();
+
     }
 
-    addTarget(element: HTMLElement): void {
+    public addTarget(element: HTMLElement): void {
         this.targets.push(element);
         addIdentifier(this.identifier, element);
         this.updateState();
     }
 
-    removeTarget(element: HTMLElement): void {
+    public removeTarget(element: HTMLElement): void {
         this.targets.splice(this.targets.indexOf(element), 1);
         removeIdentifier(this.identifier, element);
         this.updateState();
+
+        // (quick bug fix) Destroy the remaining highlighter that stays visible when manually removing the last element from a group.
+        // if (this.targets.length === 0) { 
+        //     doc.$(`.${cst.prefix}group-highlighter`).delete();
+        // }
     }
 
-    hasTarget(element: HTMLElement): boolean {
+    public hasTarget(element: HTMLElement): boolean {
         return this.targets.includes(element);
+    }
+
+    public startHighlighting(): void {
+
+        for (const key in groupRegister) {
+            if (Object.prototype.hasOwnProperty.call(groupRegister, key)) {
+                groupRegister[key].stopHighlighting();
+            }
+        }
+
+        this.highlighted = true;
+        this.highlighters = [];
+        
+        this.targets.forEach(target => {
+            const highlighter = doc.createHTML({
+                tag: 'div', attr: { className: this.hElClass }
+            });
+            this.highlighters.push({
+                target: target,
+                highlighter: highlighter
+            });
+            cst.contentWrap.appendChild(highlighter);
+        });
+
+        const frame = () => {
+            if (this.highlighted) {
+
+                this.highlighters.forEach(object => {
+                    const rect = object.target.getBoundingClientRect();
+                    object.highlighter.style.top =      `${rect.top}px`;
+                    object.highlighter.style.left =     `${rect.left}px`;
+                    object.highlighter.style.height =   `${rect.height - 2}px`;
+                    object.highlighter.style.width =    `${rect.width - 2}px`;
+                }); 
+
+                this.highlightFrameID = requestAnimationFrame(frame);
+            }
+        }
+        frame();
+    }
+
+    public stopHighlighting(): void {
+        // Cancel highlighting on this class
+        if (this.highlighted) {
+            this.highlighted = false;
+            cancelAnimationFrame(this.highlightFrameID);
+            document.querySelectorAll(`.${cst.prefix}${this.hElClass}`).forEach(el => el.parentNode.removeChild(el));
+        }
     }
 }
 
@@ -305,17 +385,30 @@ export function addToGroup(group: string, element: HTMLElement) {
     if (groupRegister[group]) 
     if (!groupRegister[group].targets.includes(element)) {
         groupRegister[group].addTarget(element);
-        groupRegister[group].updateState();
     }
 
 }
+
 export function removeFromGroup(group: string, element: HTMLElement) {
     if (groupRegister[group]) 
     if (groupRegister[group].targets.includes(element)) {
         groupRegister[group].removeTarget(element);
-        this.updateState();
     }
 }
+
+/**
+ * Returns an 
+ * @param group A hex code representing the group id
+ * @returns ElementStylingGroup
+ */
 export function getGroup(group: string): ElementStylingGroup|undefined {
     return groupRegister[group];
+}
+
+/**
+ * Returns an object containing all active element groups.
+ * @returns groupRegister Object
+ */
+export function getGroups(): typeof groupRegister {
+    return groupRegister;
 }

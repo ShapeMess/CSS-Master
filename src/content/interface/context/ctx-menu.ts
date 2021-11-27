@@ -3,8 +3,9 @@ import Writable from '../../lib/writables.js';
 import * as cst from '../../consts.js';
 import * as doc from '../../lib/doc.js';
 import * as Core from '../core/core.js';
+import * as highlight from '../select/selection-highlighting.js';
 
-type HTElem = HTMLElement;
+type Html = HTMLElement;
 type Span = HTMLSpanElement;
 type Div = HTMLDivElement;
 type P = HTMLParagraphElement;
@@ -21,6 +22,8 @@ let context = {
     wrap: null as Div,
     handle: null as Div,
     list: null as Div,
+
+    elInfWrap: null as Div,
     
     tag: null as Span,
     id: null as Span,
@@ -33,10 +36,55 @@ let context = {
     clearTransform: null as P
 }
 
-
 const hide = () => context.wrap.style.display = 'none';
+const isUI = (e: MouseEvent) => doc.$(e.target as Html).areUIParts();
 
 function init() {
+
+    /**
+     * Adds an element to the current group (creates a new one if none are present).
+     */
+    function addtoGroup() {
+        if ((Object.keys(Core.getGroups()).length === 0)) {
+            const group = new Core.ElementStylingGroup();
+            gList.value.appendChild(group.uiElement);
+            group.addTarget(temp.select);
+            group.select(); 
+        }
+        Core.addToGroup(currentGroup.value, temp.select); hide()
+    }
+
+    /**
+     * Adds an element to a new group.
+     */
+    function addToNewGroup() {
+        const group = new Core.ElementStylingGroup();
+        gList.value.appendChild(group.uiElement);
+        group.addTarget(temp.select);
+        group.select(); 
+        hide();
+    }
+
+    /**
+     * Removes the element from the page.
+     */
+    function deleteElement() {
+        const elGroup = temp.select.getAttribute(cst.cssGroupAttr);
+        if (elGroup !== null) Core.removeFromGroup(elGroup, temp.select);
+        doc.$(temp.select).delete(); 
+        hide(); 
+    }
+
+    /**
+     * Highlights all elements in the given group.
+     */
+    function highlightGroupTargets(id: string) {
+        const group = Core.getGroup(id);
+        if (group) {
+            
+        }
+    }
+
 
     context.wrap = doc.createHTML({
         tag: 'div',
@@ -49,6 +97,7 @@ function init() {
                 nodes: [{
                     tag: 'div',
                     attr: { className: 'el-info-wrap' },
+                    use: (el: Div) => context.elInfWrap = el,
                     nodes: [
                         { tag: 'span', attr: { className: 'tag' }, use: el => context.tag = el },
                         { tag: 'span', attr: { className: 'id'  }, use: el => context.id = el  },
@@ -65,10 +114,10 @@ function init() {
                     {
                         tag: 'p',
                         attr: { className: 'option', title: 'Add the element to the currently active group.'},
-                        nodes: ['Add'],
+                        nodes: ['Add', { tag: 'span', nodes: ['Ctrl + Click'] }],
                         use: (el: P) => context.addToGroup = el,
                         evt: {
-                            click: () => { Core.addToGroup(currentGroup.value, temp.select); hide() }
+                            click: addtoGroup
                         }
                     },
                     {
@@ -77,12 +126,7 @@ function init() {
                         nodes: ['Delete'],
                         use: (el: P) => context.delete = el,
                         evt: {
-                            dblclick: () => { 
-                                const elGroup = temp.select.getAttribute(cst.cssGroupAttr);
-                                if (elGroup !== null) Core.removeFromGroup(elGroup, temp.select);
-                                doc.$(temp.select).delete(); 
-                                hide(); 
-                            }
+                            dblclick: deleteElement
                         }
                     },
                     {
@@ -111,16 +155,10 @@ function init() {
                     {
                         tag: 'p',
                         attr: { className: 'option', title: 'Select this element and add it to an entirely new group.'},
-                        nodes: ['Add to new group'],
+                        nodes: ['Add to new group', { tag: 'span', nodes: ['Ctrl + Alt + Click'] }],
                         use: (el: P) => context.addToNewGroup = el,
                         evt: {
-                            click: () => { 
-                                const group = new Core.ElementStylingGroup();
-                                gList.value.appendChild(group.uiElement);
-                                group.addTarget(temp.select);
-                                group.select(); 
-                                hide();
-                            }
+                            click: addToNewGroup
                         }
                     }
                 ]
@@ -131,8 +169,12 @@ function init() {
     doc.makeDraggable(context.wrap, context.handle);
     cst.contentWrap.append(context.wrap);
 
-    document.addEventListener('contextmenu', e => {
-        if (e.altKey && !doc.$(e.target as HTElem).areUIParts()) {
+    /**
+     * Shows the contextmenu and positions it accordingly.
+     * @param e MouseEvent
+     */
+    function openCTX(e: MouseEvent) {
+        if (e.altKey && !doc.$(e.target as Html).areUIParts()) {
             e.preventDefault();
             const el = e.target as HTMLElement;
             temp.select = el;
@@ -160,18 +202,88 @@ function init() {
             if (y + rect.height > window.innerHeight) context.wrap.style.top = `${window.innerHeight - rect.height}px`;
             else                                      context.wrap.style.top = `${y}px`;
         }
-    });
+    }
 
-    document.addEventListener('click', (e) => {
+    /**
+     * Attempts to close the contextmenu if `e.target` isn't a member of the `context` object.
+     * @param e MouseEvent
+     */
+    function attemptCloseCTX(e: MouseEvent) {
         if (!Object.values(context).includes(e.target as HTMLElement)) context.wrap.style.display = 'none';
+    }
+
+    /**
+     * Highlights the target element.
+     */
+    function highlightTarget() { 
+        highlight.setTarget(temp.select);
+    }
+
+
+    const capture = {
+        /**
+         * Key shortcut for `add` from the contextmenu.
+         * @param e MouseEvent
+         */
+        ctrlClick: (e: MouseEvent): boolean => {
+            if (!isUI(e))
+            if (e.ctrlKey) {
+                temp.select = e.target as Html;
+                addtoGroup();
+                return true;
+            }
+            return false;
+        },
+        /**
+         * Key shortcut for `add to new gtoup` from the contextmenu.
+         * @param e MouseEvent
+         */
+        ctrlAltClick: (e: MouseEvent): boolean => {
+            if (!isUI(e))
+            if (e.ctrlKey && e.altKey) {
+                temp.select = e.target as Html;
+                addToNewGroup();
+                return true;
+            }
+            return false;
+        }
+    }
+
+    context.wrap.addEventListener('mouseover', highlightTarget);
+
+
+
+    let keyDown = false;
+    document.querySelector('html').addEventListener('keydown', e => {
+        if (!keyDown && e.ctrlKey) {
+            keyDown = true;
+            doc.$(document.body).addClass(cst.cls.bodyCrosshair);
+        }
+    });
+    document.querySelector('html').addEventListener('keyup', () => {
+        keyDown = false;
+        doc.$(document.body).removeClass(cst.cls.bodyCrosshair);
     });
 
-    // document.addEventListener('keypress', (e) => {
-    //     if (e.code === 'Backquote')
-    // })
+               
+
+
+    // Events called on actual page elements (get removed if the UI is to be hidden)
+    document.addEventListener('contextmenu', openCTX);
+    document.addEventListener('click', attemptCloseCTX);
+
+    document.body.addEventListener('click', e => {
+        if      (capture.ctrlAltClick(e)) return e.stopPropagation();
+        else if (capture.ctrlClick(e)) return e.stopPropagation();
+    });
+
+
 
 }
 
 export default {
     init
 };
+
+
+

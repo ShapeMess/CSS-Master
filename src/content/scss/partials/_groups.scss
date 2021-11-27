@@ -92,10 +92,11 @@ $fc2: var(--cssm-fc2);
 
     .#{$p}list {
         width: 100%;
-        min-height: 150px;
-        max-height: 400px;
+        max-height: 70vh;
 
         overflow-y: auto;
+        overflow-x: hidden;
+        border-bottom-right-radius: 5px;
 
         &::-webkit-scrollbar {
             width: 10px;
@@ -113,6 +114,11 @@ $fc2: var(--cssm-fc2);
             min-height: 30px;
             width: 100%;
             border-bottom: solid 1px $c-bg2;
+            &:last-child {
+                border-bottom: none;
+                border-bottom-left-radius: 5px;
+                border-bottom-right-radius: 5px;
+            }
 
             .#{$p}group-tab {
                 height: 30px;
@@ -120,7 +126,7 @@ $fc2: var(--cssm-fc2);
 
                 display: grid;
                 align-items: center;
-                grid-template-columns: 30px 1fr 30px 30px;
+                grid-template-columns: 30px 1fr 30px 30px 30px;
 
                 .#{$p}check-ball {
                     height: 14px;
@@ -204,10 +210,10 @@ $fc2: var(--cssm-fc2);
 
                     .#{$p}elem {
                         display: flex;
-                        overflow-x: hidden;
-                        border-radius: 5px;;
+                        overflow: hidden;
+                        border-radius: 3px;
                         position: relative;
-                        margin: 4px 0;
+                        padding: 1px 0;
 
                         &:after {
                             content: '';
@@ -216,7 +222,7 @@ $fc2: var(--cssm-fc2);
                             top: 0; right: 0;
                             height: 100%;
                             width: 30px;
-                            background: linear-gradient(to right, transparent 0%, $c-bg1 50%);
+                            background: linear-gradient(to right, transparent 0%, $c-bg1 100%);
                         }
 
                         &:hover {
@@ -258,10 +264,18 @@ $fc2: var(--cssm-fc2);
                             svg {
                                 @extend .#{$p}svg-ctrl;
                                 opacity: 0;
+                                padding: 3px;
                             }
                         }
-                        &:hover svg {
-                            opacity: 1;
+                        &:hover {
+                            background: $c-bg2;
+                            &:after {
+                                width: 45px;
+                                background: linear-gradient(to right, transparent 0%, $c-bg1 50%);
+                            }
+                            svg {
+                                opacity: 1;
+                            }
                         }
                     }
                 }

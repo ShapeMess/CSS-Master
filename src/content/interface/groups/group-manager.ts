@@ -4,7 +4,7 @@ import * as doc from '../../lib/doc.js';
 import * as cst from '../../consts.js';
 import * as core from '../core/core.js';
 
-import type * as T from '../../types.d';
+import type * as T from '../../types';
 
 type Html = HTMLElement;
 type Span = HTMLSpanElement;
@@ -82,7 +82,7 @@ function init() {
 
     (new Writable('group-list')).set(elems.list);
 
-    doc.$(elems.newGroup).on('click', (e) => {
+    doc.$(elems.newGroup).on('click', (e) => { 
         const group = new core.ElementStylingGroup();
         group.select();
         elems.list.appendChild(group.uiElement);

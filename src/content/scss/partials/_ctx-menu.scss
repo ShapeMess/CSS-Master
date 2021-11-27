@@ -7,6 +7,7 @@ $c-bg2: var(--cssm-bg2);
 $c-bg3: var(--cssm-bg3);
 
 $fc1: var(--cssm-fc1);
+$fc2: var(--cssm-fc2);
 
 .#{$p}ctx {
     display: none;
@@ -14,7 +15,7 @@ $fc1: var(--cssm-fc1);
     z-index: $z;
 
     min-height: 100px;
-    width: 200px;
+    width: 250px;
 
     background-color: $c-bg1;
     border-radius: 5px;
@@ -25,7 +26,7 @@ $fc1: var(--cssm-fc1);
     &, * { user-select: none; }
 
     .#{$p}handle {
-        width: calc(200px - 18px);
+        width: calc(100% - 18px);
         height: 25px;
         display: flex;
         align-items: center;
@@ -90,6 +91,7 @@ $fc1: var(--cssm-fc1);
             &.#{$p}disabled { 
                 pointer-events: none;
                 opacity: 0.4;
+                &.#{$p}dbl:after { opacity: 0.6; }
             }
 
             &:hover { background-color: $c-bg2; }
@@ -101,7 +103,17 @@ $fc1: var(--cssm-fc1);
                 top: 0; right: 0;
                 border-style: solid;
                 border-width: 0 7px 7px 0;
-                border-color: transparent rgba(255, 255, 255, 0.2) transparent transparent
+                border-color: transparent $fc2 transparent transparent
+            }
+
+            span {
+                position: absolute;
+                right: 10px;
+                top: 50%;
+                transform: translateY(-50%);
+                font-family: inherit;
+                font-size: 0.9em;
+                color: $fc2;
             }
 
         }

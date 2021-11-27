@@ -1,13 +1,10 @@
 
-.vscode/settings.json
+# vscode settings
+.vscode/
 
-content/interface/context/tsconfig.json
-content/interface/core/tsconfig.json
-content/interface/main-tab/tsconfig.json
-content/interface/select/tsconfig.json
-content/interface/settings/tsconfig.json
-content/interface/tsconfig.json
-content/lib/tsconfig.json
+# compilation output
+/code
 
-content/scss/main.css.map
-content/tsconfig.json
+# SCSS compilation results
+main.css
+main.css.map
