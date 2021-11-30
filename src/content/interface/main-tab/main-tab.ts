@@ -25,6 +25,27 @@ function init() {
                 tag: 'div',
                 attr: { className: 'handle' },
                 use: (el: Div) => elems.handle = el,
+                nodes: [
+                    {
+                        tag: 'div',
+                        attr: { className: 'btn-ball hide', title: 'Change widget opacity' },
+                        evt: { click: () => doc.$(elems.main).toggleClass('opacity') }
+                    },
+                    {
+                        tag: 'p',
+                        nodes: ['Element settings']
+                    }
+                ]
+            },
+            {
+                tag: 'div',
+                attr: { className: 'upper-grid' },
+                nodes: [
+                    {
+                        tag: 'div',
+                        attr: { className: 'sidebar' },
+                    } 
+                ]
             } 
         ]
     }) as Div;
@@ -38,5 +59,5 @@ function init() {
 
 
 export default {
-    init
+    init 
 }

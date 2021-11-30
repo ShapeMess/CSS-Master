@@ -86,6 +86,9 @@ function init() {
         const group = new core.ElementStylingGroup();
         group.select();
         elems.list.appendChild(group.uiElement);
+        group.inputElement.focus();
+        group.inputElement.selectionStart = 0;
+        group.inputElement.selectionEnd = group.inputElement.value.length;
     });
 
     doc.makeDraggable(menuElement, elems.handle);

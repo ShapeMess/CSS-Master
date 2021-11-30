@@ -1,0 +1,76 @@
+
+$p: '_cssm_';
+$z: 20000;
+$z-peripheral: 20001;
+
+$c-bg1: var(--cssm-bg1);
+$c-bg2: var(--cssm-bg2);
+$c-bg3: var(--cssm-bg3);
+$c-bg4: var(--cssm-bg4);
+$c-bg5: var(--cssm-bg5);
+
+$c1: var(--cssm-c1);
+$c2: var(--cssm-c2);
+
+$fc1: var(--cssm-fc1);
+$fc2: var(--cssm-fc2);
+
+
+
+.#{$p}main-tab {
+    position: fixed;
+    width: 340px;
+    top: 5vh;
+    left: 5vh;
+
+    background-color: $c-bg1;
+    border-radius: 5px;
+    box-shadow: 0 0 7px rgba(0, 0, 0, 0.5);
+
+    pointer-events: all;
+    transition: opacity 0.3s;
+    z-index: $z;
+
+    &.#{$p}opacity { opacity: 0.25; }
+
+    .#{$p}handle {
+        height: 30px;
+        width: 100%;
+        background-color: $c-bg2;
+        border-top-left-radius: 5px;
+        border-top-right-radius: 5px;
+        display: flex;
+        align-items: center;
+        cursor: move;
+
+        p {
+            margin-left: 8px;
+            color: $fc1;
+        }
+        .#{$p}btn-ball {
+            height: 14px;
+            width: 14px;
+            background-color: $fc1;
+            border-radius: 50%;
+            margin-left: 8px;
+            cursor: pointer;
+    
+            &.#{$p}hide { background-color: $c1; }
+        }
+    }
+    
+
+    .#{$p}upper-grid {
+        width: 100%;
+        min-height: 270px;
+
+        display: grid;
+        grid-template-columns: 41px 1fr;
+
+        .#{$p}sidebar {
+            height: 100%;
+            border-right: solid 1px $c-bg2;
+        }
+    }
+
+}

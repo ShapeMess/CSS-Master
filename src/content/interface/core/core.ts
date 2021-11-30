@@ -4,10 +4,14 @@ import * as doc from '../../lib/doc.js';
 import * as cst from '../../consts.js';
 import * as highlight from '../select/selection-highlighting.js';
 
+import CSSInterface from './CSSInterface.js';
+
 import type * as T from '../../types';
+import type * as Core from './core.types';
 
 type Html = HTMLElement;
 type Span = HTMLSpanElement;
+type Input = HTMLInputElement;
 type Div = HTMLDivElement;
 type P = HTMLParagraphElement;
 type Preset = T.HTMLJsonMarkupExtendable;
@@ -80,34 +84,34 @@ const removeIdentifier = (group: string, element: Html) => {
 
 const currentGroup = new Writable('current-group');
 
-interface GroupHighlighterObject {
-    target: Html,
-    highlighter: Html,
-}
 
-export class ElementStylingGroup {
+
+
+export class ElementStylingGroup extends CSSInterface {
 
     private hElClass = 'group-highlighter';
 
-    public changes: typeof cst.styleChangeRegisterTemplate;
     public identifier: string;
-    public targets: HTMLElement[] = [];
 
-    public uiElement: HTMLElement;
-    public listElement: HTMLElement;
+    public uiElement: Html;
+    public listElement: Html;
+    public inputElement: Input;
     public elCountElement: P;
 
     public active = false;
     private nameInputActive = false;
 
-    private highlighters: GroupHighlighterObject[] = [];
+    private highlighters: Core.GroupHighlighterObject[] = [];
     private highlightFrameID: number;
     private highlighted = false;
 
-    constructor() {
-        this.changes = {...cst.styleChangeRegisterTemplate};
-        this.identifier = getHexIdentifier();
+    private updateIDs: number[] = [];
 
+    constructor() {
+
+        super();
+
+        this.identifier = getHexIdentifier();
         groupRegister[this.identifier] = this;
 
         const elems = {
@@ -136,15 +140,22 @@ export class ElementStylingGroup {
                             attr: { type: 'text', className: 'name-input', value: `Group ${this.identifier}`, spellcheck: false },
                             evt: { 
                                 click: (e) => {
-                                    let el = e.target as HTMLInputElement;
+                                    let el = this.inputElement;
                                     if (!this.nameInputActive) {
                                         this.nameInputActive = true;
                                         el.selectionStart = 0;
                                         el.selectionEnd = el.value.length;
                                     }
                                 },
-                                blur: (e) => this.nameInputActive = false
-                            }
+                                blur: (e) => {
+                                    let el = this.inputElement;
+                                    this.nameInputActive = false;
+                                    if (el.value.match(/^.+\s.+$/g) || el.value.length === 0) {
+                                        el.value = `Group ${this.identifier}`;
+                                    }
+                                }
+                            },
+                            use: (el: Input) => this.inputElement = el
                         },
                         {
                             $extend: preset.svgIco,
@@ -215,7 +226,6 @@ export class ElementStylingGroup {
         });
 
     }
-
     public select(): void {
         for (const key in groupRegister) {
             if (Object.prototype.hasOwnProperty.call(groupRegister, key)) {
@@ -229,7 +239,6 @@ export class ElementStylingGroup {
         this.active = true;
         this.updateState();
     }
-
     public delete(): void {
 
         // Remove element attributes or specific group identifiers
@@ -248,15 +257,30 @@ export class ElementStylingGroup {
             if (groups.length > 0) groupRegister[groups[0]].select();
         }
     }
-
     public updateState(): void {
 
-        this.elCountElement.textContent = `Elements: (${this.targets.length})`;
+        // clear previous intervals
+        this.updateIDs.forEach(ID => { clearInterval(ID) });
+        this.updateIDs = [];
 
+        this.elCountElement.textContent = `Elements: (${this.targets.length})`;
         this.listElement.textContent = '';
+
         this.targets.forEach(elem => {
 
-            const elInfo = doc.getElementInfo(elem);
+            let elInfo = doc.getElementInfo(elem);
+            let id: Html;
+            let classes: Html;
+            let attrs: Html;
+
+            this.updateIDs.push(setInterval(() => {
+                elInfo = doc.getElementInfo(elem);
+
+                id.textContent =        elInfo.id;
+                classes.textContent =   elInfo.classes;
+                attrs.textContent =     elInfo.attrs.join('');
+
+            }, 250));
  
             const label = doc.createHTML({
                 tag: 'div',
@@ -271,17 +295,20 @@ export class ElementStylingGroup {
                     {
                         tag: 'p',
                         attr: { className: 'id' },
-                        nodes: [elInfo.id]
+                        nodes: [elInfo.id],
+                        use: el => id = el
                     },
                     {
                         tag: 'p',
                         attr: { className: 'class' },
-                        nodes: [elInfo.classes]
+                        nodes: [elInfo.classes],
+                        use: el => classes = el
                     },
                     {
                         tag: 'p',
                         attr: { className: 'attr' },
-                        nodes: elInfo.attrs
+                        nodes: elInfo.attrs,
+                        use: el => attrs = el
                     },
                     {
                         tag: 'div',
@@ -309,28 +336,19 @@ export class ElementStylingGroup {
         if (this.highlighted) this.startHighlighting();
 
     }
-
     public addTarget(element: HTMLElement): void {
         this.targets.push(element);
         addIdentifier(this.identifier, element);
         this.updateState();
     }
-
     public removeTarget(element: HTMLElement): void {
         this.targets.splice(this.targets.indexOf(element), 1);
         removeIdentifier(this.identifier, element);
         this.updateState();
-
-        // (quick bug fix) Destroy the remaining highlighter that stays visible when manually removing the last element from a group.
-        // if (this.targets.length === 0) { 
-        //     doc.$(`.${cst.prefix}group-highlighter`).delete();
-        // }
     }
-
     public hasTarget(element: HTMLElement): boolean {
         return this.targets.includes(element);
     }
-
     public startHighlighting(): void {
 
         for (const key in groupRegister) {
@@ -369,7 +387,6 @@ export class ElementStylingGroup {
         }
         frame();
     }
-
     public stopHighlighting(): void {
         // Cancel highlighting on this class
         if (this.highlighted) {
@@ -380,7 +397,11 @@ export class ElementStylingGroup {
     }
 }
 
-
+/**
+ * Removes an element from the group.
+ * @param group Group hex ID
+ * @param element HTML element
+ */
 export function addToGroup(group: string, element: HTMLElement) {
     if (groupRegister[group]) 
     if (!groupRegister[group].targets.includes(element)) {
@@ -388,17 +409,20 @@ export function addToGroup(group: string, element: HTMLElement) {
     }
 
 }
-
+/**
+ * Adds an element to the group.
+ * @param group Group hex ID
+ * @param element HTML element
+ */
 export function removeFromGroup(group: string, element: HTMLElement) {
     if (groupRegister[group]) 
     if (groupRegister[group].targets.includes(element)) {
         groupRegister[group].removeTarget(element);
     }
 }
-
 /**
- * Returns an 
- * @param group A hex code representing the group id
+ * Returns the group object the proviced id is assigned to.
+ * @param group Group hex ID
  * @returns ElementStylingGroup
  */
 export function getGroup(group: string): ElementStylingGroup|undefined {

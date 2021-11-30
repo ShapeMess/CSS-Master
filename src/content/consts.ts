@@ -16,7 +16,3 @@ export const cls = {
 export const contentWrap = document.createElement('div');
 contentWrap.classList.add(`${prefix}content-wrap`);
 
-
-export const styleChangeRegisterTemplate = {
-    // display: null as string
-}

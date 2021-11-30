@@ -2,7 +2,7 @@
 # vscode settings
 .vscode/
 
-# compilation output
+# TS compilation output
 /code
 
 # SCSS compilation results

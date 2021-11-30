@@ -28,8 +28,6 @@ $fc2: var(--cssm-fc2);
 
 .#{$p}group-manage {
     position: fixed;
-    
-    position: fixed;
     z-index: $z;
 
     min-height: 100px;
@@ -59,7 +57,7 @@ $fc2: var(--cssm-fc2);
         cursor: move;
 
         p {
-            margin-left: 10px;
+            margin-left: 8px;
             color: $fc1;
         }
 
@@ -92,7 +90,7 @@ $fc2: var(--cssm-fc2);
 
     .#{$p}list {
         width: 100%;
-        max-height: 70vh;
+        max-height: calc(80vh - 60px);
 
         overflow-y: auto;
         overflow-x: hidden;

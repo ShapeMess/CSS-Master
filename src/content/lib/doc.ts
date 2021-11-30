@@ -75,6 +75,11 @@ root.on = (event: string, callback: { (e: Event): void }) => {
 
 globalThis.root = root;
 
+/**
+ * Generates an HTML structure given a JSON template
+ * @param d JSON template
+ * @returns HTMLElement
+ */
 export function createHTML(d: T.HTMLJsonMarkup) {
 
     // Extend object
@@ -124,6 +129,11 @@ export function createHTML(d: T.HTMLJsonMarkup) {
 
     return t;
 }
+/**
+ * Makes a container draggable
+ * @param elem Wrapper
+ * @param dragHeader Handle
+ */
 export function makeDraggable(elem: HTMLElement, dragHeader: HTMLDivElement) {
     var pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
 
@@ -159,6 +169,11 @@ export function makeDraggable(elem: HTMLElement, dragHeader: HTMLDivElement) {
         document.onmousemove = null;
     }
 }
+/**
+ * An object containing element's ID, classes, attributes and a combined title.
+ * @param elem HTML element to perform checks on
+ * @returns Attribute object
+ */
 export function getElementInfo(elem: HTMLElement) {
     const ID = elem.id.length > 0 ? ` #${elem.id}` : '';
     const CLASS = elem.classList.length > 0 ? ` .${Array.from(elem.classList).join('.')}` : '';
