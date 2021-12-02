@@ -15,7 +15,21 @@ $c2: var(--cssm-c2);
 $fc1: var(--cssm-fc1);
 $fc2: var(--cssm-fc2);
 
-
+.#{$p}svg-ctrl {
+    cursor: pointer;
+    path {
+        fill: $c1;
+        transition: fill 0.15s;
+    }
+    &:hover path {
+        fill: $fc1;
+    }
+}
+.#{$p}abs-wrap {
+    width: 100%;
+    position: relative;
+    & > * { position: absolute; }
+}
 
 .#{$p}main-tab {
     position: fixed;
@@ -46,6 +60,7 @@ $fc2: var(--cssm-fc2);
         p {
             margin-left: 8px;
             color: $fc1;
+            user-select: none;
         }
         .#{$p}btn-ball {
             height: 14px;
@@ -70,6 +85,127 @@ $fc2: var(--cssm-fc2);
         .#{$p}sidebar {
             height: 100%;
             border-right: solid 1px $c-bg2;
+
+            svg {
+                @extend .#{$p}svg-ctrl;
+                height: 24px;
+                width: 24px;
+                padding: 8px;
+            }
+        }
+        .#{$p}page {
+            height: 100%;
+            width: calc(100% - 40px);
+            padding: 0 20px;
+            overflow-y: auto;
+            &::-webkit-scrollbar {
+                width: 10px;
+                background: $c-bg2;
+            }
+            &::-webkit-scrollbar-thumb {
+                min-height: 40px;
+                background: $c-bg4;
+            }
+            &::-webkit-scrollbar-thumb:hover {
+                background: $c-bg5;
+            }
+            .#{$p}title {
+                font-size: 13px;
+                color: $fc1;
+                margin: 10px 0;
+                user-select: none;
+            }
+            .#{$p}title-small {
+                font-size: 13px;
+                color: $fc1;
+                margin: 0;
+                margin-top: 10px;
+                margin-bottom: 4px;
+                user-select: none;
+            }
+            .#{$p}row {
+                display: flex;
+                align-items: center;
+            }
+        }
+
+        .#{$p}pg-sizing {
+
+            .#{$p}st-pad-marg {
+                @extend .#{$p}abs-wrap;
+                height: 140px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                margin-top: 15px;
+
+                .#{$p}box-marg {
+                    position: absolute;
+                    height: 140px;
+                    width: 100%;
+                    border: dashed 1px $c2;
+                }
+                .#{$p}box-pad {
+                    position: absolute;
+                    height: 76px;
+                    width: 60%;
+                    border: solid 1px $c1;
+                }
+                .#{$p}size-label {
+                    position: absolute;
+                    padding: 3px;
+                    background: rgba(0, 0, 0, 0.25);
+                    border-radius: 3px;
+                    color: $c1;
+                    font-size: 11px;
+                }
+
+                .#{$p}label-marg {
+                    font-size: 10px;
+                    color: $fc1;
+                    text-align: center;
+                    white-space: pre-wrap;
+                    &.#{$p}top { transform: translateY(-55px) }
+                    &.#{$p}bottom { transform: translateY(53px) }
+                    &.#{$p}left { transform: translateX(-105px) }
+                    &.#{$p}right { transform: translateX(105px) }
+                }
+                .#{$p}label-pad {
+                    font-size: 10px;
+                    color: $fc1;
+                    text-align: center;
+                    white-space: pre-wrap;
+                    &.#{$p}top { transform: translateY(-24px) }
+                    &.#{$p}bottom { transform: translateY(23px) }
+                    &.#{$p}left { transform: translateX(-57px) }
+                    &.#{$p}right { transform: translateX(57px) }
+                }
+            }
+
+            input {
+                max-width: 50px;
+                border: none;
+                border-radius: 3px;
+                background: rgba(0, 0, 0, 0.25);
+                color: $fc1;
+                &[list] {
+                    max-width: 60px;
+                    margin-left: 5px;
+                }
+                &:focus {
+                    outline: solid 1px $c1;
+                }
+                &::-webkit-outer-spin-button {
+                    opacity: 0.3;
+                }
+            }
+
+            .#{$p}row p {
+                color: $fc2;
+                font-size: 12px;
+                width: 50px;
+                margin: 5px 0;
+            }
         }
     }
 

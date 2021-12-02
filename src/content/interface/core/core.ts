@@ -280,7 +280,7 @@ export class ElementStylingGroup extends CSSInterface {
                 classes.textContent =   elInfo.classes;
                 attrs.textContent =     elInfo.attrs.join('');
 
-            }, 250));
+            }, cst.refreshRate));
  
             const label = doc.createHTML({
                 tag: 'div',
@@ -428,7 +428,6 @@ export function removeFromGroup(group: string, element: HTMLElement) {
 export function getGroup(group: string): ElementStylingGroup|undefined {
     return groupRegister[group];
 }
-
 /**
  * Returns an object containing all active element groups.
  * @returns groupRegister Object

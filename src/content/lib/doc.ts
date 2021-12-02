@@ -68,8 +68,13 @@ root.style = (property: string, value: string) => {
     for (let i = 0; i < rootObject.selection.length; i++) rootObject.selection[i].style[property] = value;
     return root;
 }
-root.on = (event: string, callback: { (e: Event): void }) => {
-    for (let i = 0; i < rootObject.selection.length; i++) rootObject.selection[i].addEventListener(event, callback);
+root.on = (event: string|string[], callback: { (e: Event): void }) => {
+    if (Array.isArray(event)) {
+        for (let i = 0; i < event.length; i++) {
+            for (let j = 0; j < rootObject.selection.length; j++) rootObject.selection[j].addEventListener(event[i], callback);
+        }
+    }
+    else for (let i = 0; i < rootObject.selection.length; i++) rootObject.selection[i].addEventListener(event, callback);
     return root;
 }
 

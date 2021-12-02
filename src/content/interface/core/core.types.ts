@@ -4,12 +4,11 @@ export interface GroupHighlighterObject { target: HTMLElement, highlighter: HTML
 
 
 // CSS Units
-export type SizeUnitAbs = 'cm'|'mm'|'in'|'px'|'pd'|'pc';
-export type SizeUnitRel = 'em'|'ex'|'ch'|'rem'|'vw'|'vh'|'vmin'|'vmax'|'%';
-export type SizeUnit = SizeUnitAbs|SizeUnitRel;
+export type UnitAbs = 'cm'|'mm'|'in'|'px'|'pd'|'pc';
+export type UnitRel = 'em'|'ex'|'ch'|'rem'|'vw'|'vh'|'vmin'|'vmax'|'%';
+export type Unit = UnitAbs|UnitRel;
 
-export type KeyUnitPair = [number, SizeUnit];
-
+export type KeyUnitPair = [number, Unit];
 export type KeyUnitPairList = [KeyUnitPair, KeyUnitPair, KeyUnitPair, KeyUnitPair];
 
 // Possible changes on a CSS interface

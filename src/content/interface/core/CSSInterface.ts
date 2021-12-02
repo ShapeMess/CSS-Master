@@ -24,16 +24,18 @@ export default class CSSInterface {
 
     constructor() {}
     
+    /** Represents virtual CSS changes to margins. */
     set margin(x: Core.KeyUnitPairList) {
-        x.map(x => css.normalizeKeyUnitPair(x));
+        x = x.map(x => css.normalizeKeyUnitPair(x)) as Core.KeyUnitPairList;
         this.changes.margin = x;
         this.repaint();
     }
     get margin() { return this.changes.margin }
 
 
+    /** Represents virtual CSS changes to padding. */
     set padding(x: Core.KeyUnitPairList) {
-        x.map(x => css.normalizeKeyUnitPair(x));
+        x = x.map(x => css.normalizeKeyUnitPair(x)) as Core.KeyUnitPairList;
         this.changes.padding = x;
         this.repaint();
     }
